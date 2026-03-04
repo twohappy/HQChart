@@ -48,105 +48,6 @@ input,canvas{outline:0px;}
     border-radius:4px;
 }
 
-/*右键菜单*/
-.context-menu-wrapper {
-    position: absolute;
-    z-index: 500;
-    overflow: auto;
-    border: 1px solid;
-    border-color: #b5b7b9;
-    background-color: #fff;
-    white-space: nowrap;
-}
-
-html.theme-dark .context-menu-wrapper {
-    background-color: #1c2030;
-    border-color: #363c4e;
-}
-
-.context-menu-wrapper .backlight {
-    background-color: #f2f3f5;
-}
-
-html.theme-dark .context-menu-wrapper .backlight {
-    background-color: #2f3241;
-}
-
-tr.context-menu.disabled {
-    color: #9d9d9d;
-}
-
-/*
-tr.context-menu.spinner > td {
-    background: url("/static/images/loading-small.0c15c93a2cb0.gif") 50% no-repeat;
-    cursor: default;
-}
-*/
-
-.submenu.center {
-    background-color: #fff;
-}
-
-.context-menu {
-    font-family: Tahoma,Arial,sans-serif;
-    font-size: 11px;
-    white-space: nowrap;
-}
-
-tr.context-menu {
-    cursor: pointer;
-    height: 29px;
-}
-
-tr.context-menu:hover {
-    background: #f2f3f5;
-}
-
-html.theme-dark tr.context-menu-hover {
-    background: #2f3241;
-}
-
-td.context-menu {
-    opacity: 1;
-    cursor: pointer;
-    padding-left: 4px;
-}
-
-.context-menu-item-separated {
-    border-bottom: 1px solid #cecece;
-}
-
-.context-menu .text {
-    min-width: 100px;
-}
-
-.context-menu .spacer {
-    width: 18px;
-    text-align: center;
-}
-
-.context-menu .icon {
-    height: 27px;
-    width: 18px;
-}
-
-.context-menu .shortcut {
-    text-align: right;
-    color: #aaa;
-    padding: 0 2px 0 10px;
-}
-
-.submenu-arrow {
-    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAKElEQVR4AWOgExgFo6Cvr+8/1Q0EYaoaCMNUNBCBB68LqRvLIxiMAgAKDyqRblYs2AAAAABJRU5ErkJggg==);
-    background-repeat: no-repeat;
-    background-position: 50%;
-    width: 20px;
-}
-
-.border td {
-    border-bottom:1px solid #b5b7b9;
-}
-/*右键菜单结束*/
 
 /*工具条*/
 .tools {
@@ -271,154 +172,6 @@ td.context-menu {
 }
 /*拖拽切换结束*/
 
-/*画图工具*/
-.drawing {
-    height: 36px;
-    float:left;
-    border:1px solid #ECEFF2;   
-}
-
-.drawing .lable {
-    background:#ECEFF2;
-    height: 36px;
-    line-height:36px;
-    float:left;
-    margin-right:1px;
-    padding:0px 5px;
-}
-.drawing .item{
-    float:left;
-    margin: 1px 1px 1px 0px;
-    padding: 0 5px;
-    cursor: pointer;
-    border: 1px solid #ECEFF2;
-    height: 32px;
-    line-height: 32px;
-}
-
-.drawing .item.active{
-    background:#1592e6;
-    color:#fff;
-    border-color:#1592e6;
-}
-.drawtools {border: 1px solid #ccc; background: #fff;}
-.drawtools .icon-image {text-align: center; padding: 5px 0 5px 10px; height: 24px; position: relative;}
-.drawtools .icon-image>i:nth-of-type(1) {font-size: 24px;}
-.drawtools .icon-image.active>i:nth-of-type(1) {color: #0182d4;}
-.drawtools .icon-image .menuTwo {position: absolute; top: 0; right: 46px; border: 1px solid #ccc; background-color: #fff; display: none; text-align: right;}
-.drawtools .icon-image .menuTwo .menuTwoItem {height: 24px; line-height: 24px; width: 125px; font-size: 12px; padding: 5px 0; display: block; padding-right: 10px;}
-.drawtools .icon-image .menuTwo .menuTwoItem::after {content: ""; display: block; width: 0; height: 0; clear: both; overflow: hidden;}
-.drawtools .icon-image .menuTwo .menuTwoItem>i {float:right; margin-left: 5px; font-size: 24px;}
-.drawtools .icon-image .menuTwo .menuTwoItem:hover {background-color: #ebf7fc;}
-.drawtools .icon-image .menuTwo .menuTwoItem.current {background-color: #37a6ef;}
-.drawtools .icon-image .contentArrow {font-size: 12px; position: absolute; top: 12px; left: 0; transition: transform 0.2s; display: none;}
-.drawtools .icon-image .contentArrow.trans {transform: rotate(180deg);}
-.drawtools .icon-image:last-child { border-top: 1px solid #ccc;}
-
-.chartpicture-text-setting {width: 400px; background-color: #fff; border: 1px solid; border-color: #b5b7b9; box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.15)}
-.titleWrap {height: 53px; line-height: 53px; width: 100%; border-bottom: 1px solid; border-color: #dadde0; position: relative;}
-.titleWrap .titleName {height: 53px; line-height: 53px; display: inline-block; padding: 0 2px; font-size: 14px; color: #4f5966; margin-left: 14px; position: relative;}
-.titleWrap .titleName::after { content: ' '; position: absolute; display: block; left: 0; bottom: -1px; width: 100%; height: 3px; background-color: #5cb888;}
-.titleWrap .closeBtn {font-size: 12px; color: #777; position: absolute; top: 0; right: 0; padding-right: 14px; padding-left: 14px; cursor: pointer;}
-.contentWrap { padding: 15px 27px;}
-.contentWrap .styleOptions {height: 27px; margin-bottom: 7px;}
-.contentWrap .styleOptions .colorPicker {width: 25px; height: 25px; cursor: pointer; display: inline-block; border: 1px solid; border-color: #1e90ff; background-color: #1e90ff; margin-right: 5px; position: relative;}
-.contentWrap .colorPicker #fontColor {position: absolute; top: 0; left: 0; opacity: 0; width: 100%; height: 100%; display: block;}
-.contentWrap .likeSelect {height: 25px; width: 50px; background-color: #f1f3f6; line-height: 25px; cursor: pointer; display: inline-block; vertical-align: top; font-size: 14px; padding: 0 20px 0 10px; border: 1px solid; border-color: #dadde0; margin-right: 5px; position: relative;}
-.contentWrap .fontSelect {font-size: 12px;}
-.contentWrap .likeSelect .choicedText {display: inline-block; width: 78px; height: 100%; overflow: hidden;}
-/* .contentWrap .likeSelect select {position: absolute; width: 100%; height: 100%; left: 0; top: 0; z-index: 999; opacity: 0.5;}
-.contentWrap .likeSelect option {height: 30px; line-height: 30px;} */
-.contentWrap .likeSelect i { font-size: 15px; position: absolute; top: 0; right: 6px;}
-.contentWrap .likeSelect .selectList {position: absolute; top: 27px; left: 0; background-color: #fff; border: 1px solid #dadde0; display: none;}
-.contentWrap .selectList p {padding: 0 15px; height: 30px; line-height: 30px; cursor: pointer; white-space: nowrap;}
-.contentWrap .selectList p:hover {background-color: #f1f3f6;}
-.contentWrap .selectList p.active {background-color: #f1f3f6; border-left: 3px solid #5cb888;}
-.contentWrap .likeBtn {border: 1px solid; border-color: #dadde0; text-align: center; cursor: pointer; vertical-align: top; font-size: 16px; margin-right: 5px; color: #4a4a4a; display: inline-block; width: 25px; height: 25px; line-height: 25px; background-color: #f1f3f6;}
-.contentWrap .strongFont {font-weight: bold;}
-.contentWrap .italicsFont {font-style: italic;}
-.contentWrap .tArea {border: 1px solid #b5b7b9; background-color: #fff; resize: none; color: #4a4a4a; font-size: 12px; line-height: 18px; box-sizing:border-box; padding: 8px 5px; width: 100%; height: 200px;}
-.contentWrap .likeSelect:hover,.contentWrap .likeBtn:hover {border-color: #b5b7b9;}
-.contentWrap .likeSelect.hot,.contentWrap .likeBtn.hot {background-color: #fff;}
-.btnsContainer {text-align: right; padding: 0 13px 27px 13px;}
-.btnsContainer .btn {width: 72px; height: 24px; line-height: 24px; cursor: pointer; padding-top: 4px; text-align: center; font-size: 14px; color: #fff; margin-right: 10px; display: inline-block;}
-.btnsContainer .okBtn {background-color: #3bb3e4;}
-.btnsContainer .okBtn:hover {background-color: #38acdb;}
-.btnsContainer .cancelBtn {background-color: #9ca0a6; margin-right: 0;}
-.btnsContainer .cancelBtn:hover{background-color: #898c91;}
-
-/*画图工具结束*/
-
-/*区间统计*/
-.jchart-select-statistics-box {
-    position: fixed;
-    width:100%;
-    height:100%;
-    left:0;
-    top:0;
-    background-color: rgba(0,0,0,0.01);
-    display:none;
-    z-index: 999;
-}
-.interval .top {
-    padding-left: 10px;
-    box-sizing: border-box;
-    height:40px;
-    line-height:40px;
-    text-align:left;
-    border-bottom: solid 1px #e1ecf2;
-    font-size: 14px;
-    color: #757d81;
-}
-.interval .top .closeBtn {
-    float:right;
-    margin-right:15px;
-    cursor:pointer;
-    font-weight: 600;
-}
-.interval table{
-    width:100%;
-    height:170px;
-}
-
-.changColorR{
-    border-right-color: #1295d9 !important;
-}
-.changColorL{
-    border-left-color: #1295d9 !important;
-}
-.interval table .dateChange1 {
-    /*padding :0px 3px;*/
-    display: inline-block;
-    cursor:pointer;
-    width: 0;
-    height: 0;
-    border: 6px solid transparent;
-    border-right: 6px solid #c8d2db;
-}
-.interval table .dateChange2 {
-    /*padding :0px 3px;*/
-    display: inline-block;
-    cursor:pointer;
-    width: 0;
-    height: 0;
-    border: 6px solid transparent;
-    border-left: 6px solid #c8d2db;
-}
-.interval table tr td:nth-child(2),.interval table tr td:nth-child(4),.interval table tr td:nth-child(6){
-    font-weight: bold;
-}
-.interval table td{
-    padding-left:10px;
-    border-bottom:1px solid #ECEFF2;
-}
-.interval table td.name {
-    text-align:right;
-}
-.interval table td:last-child {
-    padding-right:10px;
-}
-/*区间统计结束*/
 
 /*形态匹配*/
 .kLineMatch {
@@ -627,116 +380,7 @@ td.context-menu {
     margin-right: 10px;
 }
 
-/*参数设置面板*/
-.jchart-changeindex-box{
-    position: fixed;
-    display: none;
-    width:100%;
-    height:100%;
-    left:0;
-    top:0;
-    z-index: 999;
-    background-color: rgba(0,0,0,0.01);
-}
 
-.jchart-modifyindex-box{
-    position: fixed;
-    display: none;
-    width:100%;
-    height:100%;
-    left:0;
-    top:0;
-    z-index: 999;
-    background-color: rgba(0,0,0,0.01);
-}
-
-.jchart-kline-minute-box{
-    position: absolute;
-    display: none;
-    width:500px;
-    height:550px!important;
-    padding: 0 5px 20px 10px;
-    background-color: rgba(255,255,255,0.95);
-    border: solid 1px rgba(200, 210, 219, 0.92);
-    box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.23);
-    z-index: 999;
-}
-
-.parameter{
-    position: absolute;
-    top:50%;
-    left: 50%;
-    transform: translateX(-50%) translateY(-50%);
-    padding: 3px;
-    box-sizing: border-box;
-    width: 520px;
-    height: 421px;
-    background-color: rgba(255, 255, 255, 0.96);
-    box-shadow: 0px 4px 17px 0px rgba(0, 0, 0, 0.55);
-    border-radius: 2px;
-    z-index: 999;
-}
-.parameter-header{
-    position: relative;
-    width:100%;
-    height: 42px;
-    line-height: 42px;
-    border-bottom: 1px solid #c8d2db;
-}
-.parameter-header span{
-    font-family: 微软雅黑;
-    font-size: 14px;
-    margin-left: 10px;
-}
-.parameter-header strong{
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    font-size: 14px;
-    font-weight: 300;
-}
-.parameter-content{
-    padding: 20px;
-    box-sizing: border-box;
-}
-
-.row-line{
-    margin-right: 20px;
-    margin-top: 10px;
-    padding-left: 3px;
-    box-sizing: border-box;
-    width:100px;
-    height:24px;
-    line-height: 24px;
-    border:1px solid #cccccc;
-}
-#close{
-    cursor: pointer;
-}
-.parameter1{
-    cursor:pointer;
-}
-
-.parameter-footer{
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-}
-.parameter-footer button{
-    margin-left: 15px;
-    width: 78px;
-    height: 28px;
-    border: none;
-    border-radius: 2px;
-    color: #ffffff;
-}
-.submit{
-    background-color: #0182d4;
-}
-.cancel{
-    background-color: #c8d2db;
-}
 
 /*指数设置面板*/
 .target-box{
@@ -1295,6 +939,11 @@ input[type="color"] {
     margin-right: 10px;
 }
 
+.UMyChart_MenuItem_Td_None
+{
+    display:none;
+}
+
 
 .UMyChart_MenuItem_Tr:hover
 {
@@ -1349,15 +998,16 @@ input[type="color"] {
 {
     font-family: "微软雅黑";
     /*display: flex;*/
-    border: 2px solid; 
+    border: 1px solid; 
     width:fit-content;
-    border-color: rgb(204,204,204);
+    border-color: var(--HQChart-DialogDrawTool-BorderColor);
     visibility:hidden;
     position: absolute;
-    background-color: rgba(250,250,250,1);
+    background-color: var(--HQChart-DialogDrawTool-BGColor);
     left:1px;
     top:1px;
     z-index: 99;
+    color:var(--HQChart-DialogDrawTool-Color);
 }
 
 .UMyChart_DrawTool_Title_Div
@@ -1365,11 +1015,12 @@ input[type="color"] {
     padding-left: 2px;
     height:20px;
     border-bottom: 1px solid;
-    border-color: rgb(204,204,204);
+    border-color: var(--HQChart-DialogDrawTool-BorderColor);
     display: flex;
     cursor: default;
     user-select: none;
-    background-color:rgb(222,222,222)
+    color:var(--HQChart-DialogDrawTool-TitleColor);
+    background-color:var(--HQChart-DialogDrawTool-TitleBGColor);
 }
 
 .UMyChart_DrawTool_Close_Div
@@ -1377,6 +1028,7 @@ input[type="color"] {
     margin-left: auto;
     padding-right: 4px;
     cursor:pointer;
+    color:var(--HQChart-DialogDrawTool-CloseColor);
 }
 
 .UMyChart_DrawTool_Table
@@ -1400,9 +1052,9 @@ input[type="color"] {
 {
     font-size:22px;
     border: 1px solid;
-    border-color: rgb(128,128,128);
-    background: rgb(234,85,4);
-    color: rgb(255,255,255);
+    border-color: var(--HQChart-DialogDrawTool-Selected_ButtonBorderColor);
+    background: var(--HQChart-DialogDrawTool-Selected_ButtonBGColor);
+    color: var(--HQChart-DialogDrawTool-Selected_ButtonColor);
 }
 
 .UMyChart_DrawTool_Td
@@ -1414,8 +1066,8 @@ input[type="color"] {
 {
     font-size:22px;
     border: 1px solid;
-    border-color: rgb(128,128,128);
-    color: rgb(77,77,77);
+    border-color: var(--HQChart-DialogDrawTool-ButtonBorderColor);
+    color: var(--HQChart-DialogDrawTool-ButtonColor);
 }
 
 .UMyChart_DrawTool_Group_Tr
@@ -1434,7 +1086,15 @@ input[type="color"] {
 {
     height:5px;
     border-bottom: 1px solid;
-    border-color: rgb(204,204,204);
+    border-color:var(--HQChart-DialogDrawTool-DividingLineColor); 
+}
+
+.UMyChart_DrawTool_Input_Color
+{
+    visibility:hidden;
+    width:22px;
+    height:22px;
+    position:absolute;
 }
 
 
@@ -1455,12 +1115,14 @@ input[type="color"] {
 {
     font-family: "微软雅黑";
     /*display: flex;*/
-    border: 2px solid; 
+    border-top: 1px solid; 
+    border-bottom: 1px solid;
+    border-left: 1px solid;
     width:fit-content;
-    border-color: rgb(204,204,204);
+    border-color: var(--HQChart-DialogModifyDraw-BorderColor);
     visibility:hidden;
     position: absolute;
-    background-color: rgba(250,250,250,1);
+    background-color: var(--HQChart-DialogModifyDraw-BGColor);
     left:1px;
     top:1px;
     display: flex;
@@ -1469,14 +1131,55 @@ input[type="color"] {
 
 .UMyChart_Draw_Modify_Dialog_Drag_Div
 {
-    width:24px;
+    width:22px;
     user-select: none;
+    border: 1px solid; 
+    padding: 1px;
+    background-color:var(--HQChart-DialogModifyDraw-DragBGColor);
+    border-color: var(--HQChart-DialogModifyDraw-DragBGColor);
+}
+
+.UMyChart_Draw_Modify_Dialog_Drag_Span
+{
+    font-size:22px;
+    color:var(--HQChart-DialogModifyDraw-DragColor);
 }
 
 .UMyChart_Draw_Modify_Dialog_Button_Div
 {
-    
+    border-right: 1px solid; 
+    border-color:var(--HQChart-DialogModifyDraw-ButtonBorderColor);
+    padding: 2px;
 }
+
+
+.UMyChart_Draw_Modify_Dialog_Button_Span
+{
+    font-size:22px;
+    color:var(--HQChart-DialogModifyDraw-ButtonColor);
+}
+
+.UMyChart_Draw_Modify_Dialog_Button_ColorBar_Div
+{
+    margin-top: 2px;
+    height: 3px;
+    width: 22px;
+}
+
+.UMyChart_Draw_Modify_Dialog_Button_Color_Span
+{
+    font-size:17px;
+    margin-left: 2px;
+    color:var(--HQChart-DialogModifyDraw-ButtonColor);
+}
+
+
+.UMyChart_Draw_Modify_Dialog_Unlock_Button_Span
+{
+    font-size:22px;
+    color:var(--HQChart-DialogModifyDraw-UnlockButtonColor);
+}
+
 
 .UMyChart_Draw_Modify_Tooltip
 {
@@ -1485,17 +1188,25 @@ input[type="color"] {
     top: 30px;
     z-index: 2;
     width: 80px;
-    color: rgb(0,0,0);
+    color: var(--HQChart-DialogModifyDraw-Tooltip-Color);
     font-size: 12px;
     text-align: center;
-    background-color:rgb(250,250,250);
+    background-color:var(--HQChart-DialogModifyDraw-Tooltip-BGColor);
     border-radius: 2px;
     padding: 5px 5px 5px 5px;
     pointer-events: none;
-    border-color: rgb(169,169,169);
+    border-color: var(--HQChart-DialogModifyDraw-Tooltip-BorderColor);
     border-style:solid;
     border-width:1px;
     user-select: none;
+}
+
+.UMyChart_Draw_Modify_Input_Color
+{
+    visibility:hidden;
+    width:22px;
+    height:4px;
+    position:absolute;
 }
 
 
@@ -1517,7 +1228,8 @@ input[type="color"] {
 
 .jschart_pop_minute_chart
 {
-    height:480px
+    height:480px;
+    position: relative;
 }
 
 .jschart_pop_minute_chart_Title_Div
@@ -2000,6 +1712,101 @@ input[type="color"] {
 
 
 /*
+    十字光标小浮窗
+*/
+.UMyChart_Small_Tooltip_Div
+{
+    font-family: "微软雅黑";
+    /*display: flex;*/
+    border: 1px solid; 
+    width:fit-content;
+    border-color: rgb(204,204,204);
+    visibility:hidden;
+    position: absolute;
+    background-color: rgba(20,20,20,1);
+    left:1px;
+    top:1px;
+    pointer-events:none;
+    z-index: 99;
+}
+
+.UMyChart_Small_Tooltip_Content_Div
+{
+    color: rgb(230,230,230);
+    margin: 5px 5px 5px 5px;
+}
+
+/*
+    十字光标小浮窗V2
+*/
+.UMyChart_Small_Tooltip_V2_Div
+{
+    font-family: "微软雅黑";
+    /*display: flex;*/
+    border: 1px solid; 
+    width:fit-content;
+    border-color: rgb(204,204,204);
+    visibility:hidden;
+    position: absolute;
+    background-color: rgba(20,20,20,1);
+    left:1px;
+    top:1px;
+    pointer-events:none;
+    z-index: 98;
+}
+
+
+.UMyChart_Small_Tooltip_V2_Table
+{
+    border-spacing: 3px;
+    user-select: none;
+    font-size:12px;
+}
+
+.UMyChart_Small_Tooltip_V2_Group_Tr
+{
+    
+}
+
+.UMyChart_Small_Tooltip_V2_Title_Td
+{
+    min-width: 40px;
+}
+
+.UMyChart_Small_Tooltip_V2_Text_Td
+{
+    min-width:80px;
+    max-width: 500px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.UMyChart_Tooltip_Float_Title_Span
+{
+    color: rgb(230,230,230);
+}
+
+.UMyChart_Small_Tooltip_V2_Text_Span
+{
+    float: right;
+    margin-right: 1px;
+    color: rgb(230,230,230);
+}
+
+.UMyChart_Tooltip_Float_Text2_Span
+{
+    margin-left: 1px;
+}
+
+.UMyChart_Tooltip_Float_Text3_Span
+{
+    margin-left: 5px;
+    
+}
+
+/*
     Copyright (c) 2018 jones
  
     http://www.apache.org/licenses/LICENSE-2.0
@@ -2018,10 +1825,11 @@ input[type="color"] {
     /*display: flex;*/
     border: 1px solid; 
     width:fit-content;
-    border-color: rgb(204,204,204);
+    border-color: var(--HQChart-DialogSearchIndex-BorderColor);
     visibility:hidden;
     position: absolute;
-    background-color: rgba(20,20,20,1);
+    background-color: var(--HQChart-DialogSearchIndex-BGColor);
+    color:var(--HQChart-DialogSearchIndex-Color);
     left:1px;
     top:1px;
     z-index: 99;
@@ -2036,13 +1844,13 @@ input[type="color"] {
     display: flex;
     cursor: default;
     user-select: none;
-    background-color:rgb(200, 66, 69)
+    background-color:var(--HQChart-DialogSearchIndex-TitleBGColor);
 }
 
 .UMyChart_SearchIndex_Name_Div
 {
     margin-left: 5px;
-    color:rgb(250,250,250)
+    color:var(--HQChart-DialogSearchIndex-TitleColor);
 }
 
 .UMyChart_SearchIndex_Close_Div
@@ -2050,7 +1858,7 @@ input[type="color"] {
     margin-left: auto;
     padding-right: 4px;
     cursor:pointer;
-    color:rgb(180,180,180)
+    color:var(--HQChart-DialogSearchIndex-CloseColor);
 }
 
 .UMyChart_SearchIndex_Table_Div
@@ -2093,6 +1901,7 @@ input[type="color"] {
     background-color: transparent;
     width: 99%;
     margin-left: 10px;
+    color:var(--HQChart-DialogSearchIndex-InputColor);
 }
 
 .UMyChart_SearchIndex_Container_Div
@@ -2141,10 +1950,10 @@ input[type="color"] {
     /*display: flex;*/
     border: 1px solid; 
     width:fit-content;
-    border-color: rgb(204,204,204);
+    border-color: var(--HQChart-DialogModifyIndexParam-BorderColor);
     visibility:hidden;
     position: absolute;
-    background-color: rgba(20,20,20,1);
+    background-color:var(--HQChart-DialogModifyIndexParam-BGColor);
     left:1px;
     top:1px;
     z-index: 99;
@@ -2159,13 +1968,13 @@ input[type="color"] {
     display: flex;
     cursor: default;
     user-select: none;
-    background-color:rgb(200, 66, 69)
+    background-color:var(--HQChart-DialogModifyIndexParam-TitleBGColor);
 }
 
 .UMyChart_ModifyIndexParam_Name_Div
 {
     margin-left: 5px;
-    color:rgb(250,250,250)
+    color:var(--HQChart-DialogModifyIndexParam-TitleColor);
 }
 
 .UMyChart_ModifyIndexParam_Close_Div
@@ -2173,7 +1982,7 @@ input[type="color"] {
     margin-left: auto;
     padding-right: 4px;
     cursor:pointer;
-    color:rgb(180,180,180)
+    color:var(--HQChart-DialogModifyIndexParam-CloseColor);
 }
 
 .UMyChart_ModifyIndexParam_Table_Div
@@ -2211,6 +2020,7 @@ input[type="color"] {
 .UMyChart_ModifyIndexParam_Name_Span
 {
     margin-left: 10px;
+    color:var(--HQChart-DialogModifyIndexParam-ParamNameColor);
 }
 
 .UMyChart_ModifyIndexParam_Value_Td
@@ -2226,6 +2036,13 @@ input[type="color"] {
     line-height: 16px;
     background-color: transparent;
     width: 60px;
+    color:var(--HQChart-DialogModifyIndexParam-InputTextColor);
+}
+
+.UMyChart_ModifyIndexParam_Input::-webkit-outer-spin-button,
+.UMyChart_ModifyIndexParam_Input::-webkit-inner-spin-button
+{
+    -webkit-appearance: none;
 }
 
 .UMyChart_ModifyIndexParam_Button_Div
@@ -2245,6 +2062,287 @@ input[type="color"] {
     border: 1px solid #ccc;
     cursor: pointer;
 }
+
+
+/*
+
+*/
+.UMyChart_FrameToolbar_Div
+{
+    visibility:hidden;
+    position: absolute;
+    background-color: var(--HQChart-DivFrameToolbar-BGColor);
+    z-index: 10;
+    line-height: 24px;
+    left:1px;
+    top:1px;
+    display: flex;
+}
+
+.UMyChart_FrameToolbar_Div_Button
+{
+    padding-left: 2px;
+}
+
+.UMyChart_FrameToolbar_Span_Button
+{
+    font-size: 14px;
+    color: var(--HQChart-DivFrameToolbar-TextColor);
+}
+
+.UMyChart_FrameToolbar_Span_Button:hover
+{
+    font-size: 14px;
+    color: var(--HQChart-DivFrameToolbar-HoverTextColor);
+}
+
+
+.UMyChart_Toolbar_Tooltip_Div
+{
+    visibility:hidden;
+    background-color: var(--HQChart-ToolbarTooltip-BGColor);
+    color: var(--HQChart-ToolbarTooltip-TextColor);
+    border: 1px solid var(--HQChart-ToolbarTooltip-BorderColor);
+    text-align: center;
+    border-radius: 2px;
+    padding: 2px;
+    position: absolute;
+    z-index: 50;
+    font-size: 14px;
+    white-space: nowrap;
+    left:1px;
+    top:1px;
+}
+
+
+
+:root 
+{
+    /*
+        JSDialogDrawTool 配色 画图工具
+    */
+
+    --HQChart-DialogDrawTool-BGColor: rgb(250,250,250);
+    --HQChart-DialogDrawTool-BorderColor: rgb(20,20,20);
+    --HQChart-DialogDrawTool-Color: rgb(20,20,20);
+    --HQChart-DialogDrawTool-TitleColor: rgb(250,250,250);
+    --HQChart-DialogDrawTool-TitleBGColor: rgb(200, 66, 69);
+    --HQChart-DialogDrawTool-CloseColor:rgb(180,180,180);
+    --HQChart-DialogDrawTool-ButtonColor:rgb(77,77,77);
+    --HQChart-DialogDrawTool-ButtonBorderColor:rgb(128,128,128);
+    --HQChart-DialogDrawTool-Selected_ButtonColor:rgb(255,255,255);
+    --HQChart-DialogDrawTool-Selected_ButtonBGColor:rgb(234,85,4);
+    --HQChart-DialogDrawTool-Selected_ButtonBorderColor:rgb(128,128,128);
+    --HQChart-DialogDrawTool-DividingLineColor:rgb(204,204,204);
+
+    /*
+        JSDialogModifyDraw
+    */
+
+    --HQChart-DialogModifyDraw-BGColor: rgb(250,250,250);
+    --HQChart-DialogModifyDraw-BorderColor: rgb(20,20,20);
+    --HQChart-DialogModifyDraw-DragColor: rgb(250,250,250);
+    --HQChart-DialogModifyDraw-DragBGColor: rgb(200, 66, 69);
+    --HQChart-DialogModifyDraw-ButtonColor:rgb(77,77,77);
+    --HQChart-DialogModifyDraw-ButtonBorderColor:rgb(20,20,20);
+    --HQChart-DialogModifyDraw-UnlockButtonColor:rgb(220,220,220);
+
+    --HQChart-DialogModifyDraw-Tooltip-BGColor: rgb(250,250,250);
+    --HQChart-DialogModifyDraw-Tooltip-BorderColor: rgb(20,20,20);
+    --HQChart-DialogModifyDraw-Tooltip-Color: rgb(20,20,20);
+
+    /*
+        JSDialogSearchIndex
+    */
+
+    --HQChart-DialogSearchIndex-BGColor: rgb(250,250,250);
+    --HQChart-DialogSearchIndex-BorderColor: rgb(20,20,20);
+    --HQChart-DialogSearchIndex-Color: rgb(20,20,20);
+    --HQChart-DialogSearchIndex-TitleColor: rgb(250,250,250);
+    --HQChart-DialogSearchIndex-TitleBGColor: rgb(200, 66, 69);
+    --HQChart-DialogSearchIndex-CloseColor:rgb(180,180,180);
+    --HQChart-DialogSearchIndex-InputColor:rgb(20,20,20);
+
+
+    /*
+        JSDialogModifyIndexParam
+    */
+    --HQChart-DialogModifyIndexParam-BGColor: rgb(250,250,250);
+    --HQChart-DialogModifyIndexParam-BorderColor: rgb(20,20,20);
+    --HQChart-DialogModifyIndexParam-Color: rgb(20,20,20);
+    --HQChart-DialogModifyIndexParam-TitleColor: rgb(250,250,250);
+    --HQChart-DialogModifyIndexParam-TitleBGColor: rgb(200, 66, 69);
+    --HQChart-DialogModifyIndexParam-CloseColor:rgb(180,180,180);
+    --HQChart-DialogModifyIndexParam-ParamNameColor:rgb(20,20,20);
+    --HQChart-DialogModifyIndexParam-InputTextColor:rgb(20,20,20);
+
+    /*
+        JSDivFrameToolbar
+    */
+    --HQChart-DivFrameToolbar-BGColor:transparent;
+    --HQChart-DivFrameToolbar-TextColor:rgb(0,0,0);
+    --HQChart-DivFrameToolbar-HoverTextColor:rgb(30,144,255);
+
+    /*
+        JSToolbarTooltip
+    */
+    --HQChart-ToolbarTooltip-BGColor:rgb(255,255,255);
+    --HQChart-ToolbarTooltip-TextColor:rgb(71,71,71);
+    --HQChart-ToolbarTooltip-BorderColor:rgb(0,0,0);
+}
+
+/*
+    白色风格
+*/
+:root[hqchart_style='0'],
+:root[hqchart_style='defined']
+{
+    /*
+        JSDialogDrawTool 配色 画图工具
+    */
+
+    --HQChart-DialogDrawTool-BGColor: rgb(250,250,250);
+    --HQChart-DialogDrawTool-BorderColor: rgb(20,20,20);
+    --HQChart-DialogDrawTool-Color: rgb(20,20,20);
+    --HQChart-DialogDrawTool-TitleColor: rgb(250,250,250);
+    --HQChart-DialogDrawTool-TitleBGColor: rgb(200, 66, 69);
+    --HQChart-DialogDrawTool-ButtonColor:rgb(77,77,77);
+    --HQChart-DialogDrawTool-ButtonBorderColor:rgb(128,128,128);
+    --HQChart-DialogDrawTool-Selected_ButtonColor:rgb(255,255,255);
+    --HQChart-DialogDrawTool-Selected_ButtonBGColor:rgb(234,85,4);
+    --HQChart-DialogDrawTool-Selected_ButtonBorderColor:rgb(128,128,128);
+    --HQChart-DialogDrawTool-DividingLineColor:rgb(204,204,204);
+
+
+    
+    /*
+        JSDialogModifyDraw
+    */
+
+    --HQChart-DialogModifyDraw-BGColor: rgb(250,250,250);
+    --HQChart-DialogModifyDraw-BorderColor: rgb(20,20,20);
+    --HQChart-DialogModifyDraw-DragColor: rgb(250,250,250);
+    --HQChart-DialogModifyDraw-DragBGColor: rgb(200, 66, 69);
+    --HQChart-DialogModifyDraw-ButtonColor:rgb(77,77,77);
+    --HQChart-DialogModifyDraw-ButtonBorderColor:rgb(20,20,20);
+    --HQChart-DialogModifyDraw-UnlockButtonColor:rgb(220,220,220);
+
+    --HQChart-DialogModifyDraw-Tooltip-BGColor: rgb(250,250,250);
+    --HQChart-DialogModifyDraw-Tooltip-BorderColor: rgb(20,20,20);
+    --HQChart-DialogModifyDraw-Tooltip-Color: rgb(20,20,20);
+
+    /*
+        JSDialogSearchIndex
+    */
+
+    --HQChart-DialogSearchIndex-BGColor: rgb(250,250,250);
+    --HQChart-DialogSearchIndex-BorderColor: rgb(20,20,20);
+    --HQChart-DialogSearchIndex-Color: rgb(20,20,20);
+    --HQChart-DialogSearchIndex-TitleColor: rgb(250,250,250);
+    --HQChart-DialogSearchIndex-TitleBGColor: rgb(200, 66, 69);
+    --HQChart-DialogSearchIndex-CloseColor:rgb(180,180,180);
+    --HQChart-DialogSearchIndex-InputColor:rgb(20,20,20);
+
+
+    /*
+        JSDialogModifyIndexParam
+    */
+    --HQChart-DialogModifyIndexParam-BGColor: rgb(250,250,250);
+    --HQChart-DialogModifyIndexParam-BorderColor: rgb(20,20,20);
+    --HQChart-DialogModifyIndexParam-Color: rgb(20,20,20);
+    --HQChart-DialogModifyIndexParam-TitleColor: rgb(250,250,250);
+    --HQChart-DialogModifyIndexParam-TitleBGColor: rgb(200, 66, 69);
+    --HQChart-DialogModifyIndexParam-CloseColor:rgb(180,180,180);
+    --HQChart-DialogModifyIndexParam-ParamNameColor:rgb(20,20,20);
+    --HQChart-DialogModifyIndexParam-InputTextColor:rgb(20,20,20);
+
+
+    /*
+        JSDivFrameToolbar
+    */
+    --HQChart-DivFrameToolbar-BGColor:transparent;
+    --HQChart-DivFrameToolbar-TextColor:rgb(0,0,0);
+    --HQChart-DivFrameToolbar-HoverTextColor:rgb(30,144,255);
+    /*
+        JSToolbarTooltip
+    */
+    --HQChart-ToolbarTooltip-BGColor:rgb(255,255,255);
+    --HQChart-ToolbarTooltip-TextColor:rgb(71,71,71);
+    --HQChart-ToolbarTooltip-BorderColor:rgb(0,0,0);
+}
+
+/*
+    黑色风格
+*/
+:root[hqchart_style='1']
+{
+    /*
+        JSDialogDrawTool 配色 画图工具
+    */
+
+    --HQChart-DialogDrawTool-BGColor: rgb(38,38,38);
+    --HQChart-DialogDrawTool-BorderColor: rgb(170,170,170);
+    --HQChart-DialogDrawTool-Color: rgb(210,210,210);
+    --HQChart-DialogDrawTool-TitleColor: rgb(250,250,250);
+    --HQChart-DialogDrawTool-TitleBGColor: rgb(200, 66, 69);
+    --HQChart-DialogDrawTool-ButtonColor:rgb(110,110,110);
+    --HQChart-DialogDrawTool-ButtonBorderColor:rgb(99,99,99);
+    --HQChart-DialogDrawTool-Selected_ButtonColor:rgb(255,255,255);
+    --HQChart-DialogDrawTool-Selected_ButtonBGColor:rgb(234,85,4);
+    --HQChart-DialogDrawTool-Selected_ButtonBorderColor:rgb(128,128,128);
+    --HQChart-DialogDrawTool-DividingLineColor:rgb(150,150,150);
+
+    /*
+        JSDialogModifyDraw
+    */
+
+    --HQChart-DialogModifyDraw-BGColor:rgb(38,38,38);
+    --HQChart-DialogModifyDraw-BorderColor: rgb(170,170,170);
+    --HQChart-DialogModifyDraw-ButtonColor:rgb(110,110,110);
+    --HQChart-DialogModifyDraw-ButtonBorderColor:rgb(170,170,170);
+    --HQChart-DialogModifyDraw-UnlockButtonColor:rgb(60,60,60);
+
+    --HQChart-DialogModifyDraw-Tooltip-BGColor: rgb(38,38,38);
+    --HQChart-DialogModifyDraw-Tooltip-BorderColor: rgb(170,170,170);
+    --HQChart-DialogModifyDraw-Tooltip-Color: rgb(210,210,210);
+
+     /*
+        JSDialogSearchIndex
+    */
+
+    --HQChart-DialogSearchIndex-BGColor: rgb(38,38,38);
+    --HQChart-DialogSearchIndex-BorderColor: rgb(170,170,170);
+    --HQChart-DialogSearchIndex-Color: rgb(210,210,210);
+    --HQChart-DialogSearchIndex-TitleColor: rgb(250,250,250);
+    --HQChart-DialogSearchIndex-TitleBGColor: rgb(200, 66, 69);
+    --HQChart-DialogSearchIndex-InputColor:rgb(210,210,210);
+
+    /*
+        JSDialogModifyIndexParam
+    */
+
+    --HQChart-DialogModifyIndexParam-BGColor: rgb(38,38,38);
+    --HQChart-DialogModifyIndexParam-BorderColor: rgb(170,170,170);
+    --HQChart-DialogModifyIndexParam-Color: rgb(210,210,210);
+    --HQChart-DialogModifyIndexParam-TitleColor: rgb(250,250,250);
+    --HQChart-DialogModifyIndexParam-TitleBGColor: rgb(200, 66, 69);
+    --HQChart-DialogModifyIndexParam-ParamNameColor:rgb(210,210,210);
+    --HQChart-DialogModifyIndexParam-InputTextColor:rgb(210,210,210);
+
+    /*
+        JSDivFrameToolbar
+    */
+    --HQChart-DivFrameToolbar-BGColor:transparent;
+    --HQChart-DivFrameToolbar-TextColor:rgb(156,156,156);
+    --HQChart-DivFrameToolbar-HoverTextColor:rgb(255,255,255);
+    /*
+        JSToolbarTooltip
+    */
+    --HQChart-ToolbarTooltip-BGColor:rgb(32,32,32);
+    --HQChart-ToolbarTooltip-TextColor:rgb(204,204,204);
+    --HQChart-ToolbarTooltip-BorderColor:rgb(69,69,69);
+}
+
 
 
 

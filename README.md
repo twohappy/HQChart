@@ -38,6 +38,21 @@ uniapp 版本:
 麦语法指标计算引擎，[https://github.com/jones2000/hqchartPy2/tree/master/HQChartPy2.Free](https://github.com/jones2000/hqchartPy2/tree/master/HQChartPy2.Free),
 支持windows,和linux. 这个版本是用c++开发的，通过cpython来对接py，能高效的完成指标执行. 可以应用于回测, 选股等批量指标计算中.
 
+## 完整的行情面板示例
+  
+纯前端， 需要安装数据插件[https://github.com/jones2000/HQChartData](https://github.com/jones2000/HQChartData)  
+
+## 行情页面
+![示例](/小程序行情模块用例/image/fulldem_1.png)  
+页面地址: [https://jones2000.github.io/HQChart/webhqchart.demo/Demo_hqchart/hqchart_demo.html](https://jones2000.github.io/HQChart/webhqchart.demo/Demo_hqchart/hqchart_demo.html)  
+
+## 报价列表
+页面地址: [https://jones2000.github.io/HQChart/webhqchart.demo/Demo_hqchart/hq_report_demo.html](https://jones2000.github.io/HQChart/webhqchart.demo/Demo_hqchart/hq_report_demo.html)  
+
+## 期权T型报价
+![示例](/小程序行情模块用例/image/TReport_demo2.gif)  
+页面地址: [https://jones2000.github.io/HQChart/webhqchart.demo/Demo_hqchart/hq_TReport_demo.html](https://jones2000.github.io/HQChart/webhqchart.demo/Demo_hqchart/hq_TReport_demo.html)  
+
 
 # 目录结构
 --webhqchart 行情前端js代码模块 <br>
@@ -194,6 +209,10 @@ React 例子:[demo-react.md](/教程/demo-react.md) <br>
 ![筹码图](/小程序行情模块用例/image/phone_chip2.gif)   
 * 多股同列 十字光标联动
 ![多股同列](/小程序行情模块用例/image/Multi_Kline.gif)  
+[https://jones2000.github.io/HQChart/webhqchart.demo/PaySamples/chart_Multi_Kline.html](https://jones2000.github.io/HQChart/webhqchart.demo/PaySamples/chart_Multi_Kline.html)  
+* K线倒计时  
+![K线倒计时](/小程序行情模块用例/image/kline_countdonw.png)  
+[https://jones2000.github.io/HQChart/webhqchart.demo/PaySamples/chart_kline_countdown.html](https://jones2000.github.io/HQChart/webhqchart.demo/PaySamples/chart_kline_countdown.html)  
 
 # 2. 走势图
 * 支持指标 <br>
@@ -213,6 +232,7 @@ React 例子:[demo-react.md](/教程/demo-react.md) <br>
 ![美股](/小程序行情模块用例/image/minute_usa.gif)
 * 多股同列 十字光标联动
 ![多股同列](/小程序行情模块用例/image/Multi_minute.gif)  
+[https://jones2000.github.io/HQChart/webhqchart.demo/PaySamples/chart_Multi_minute.html](https://jones2000.github.io/HQChart/webhqchart.demo/PaySamples/chart_Multi_minute.html)  
 * 预测线
 ![预测线](/小程序行情模块用例/image/minute_PredictLine.png)  
 
@@ -253,6 +273,7 @@ React 例子:[demo-react.md](/教程/demo-react.md) <br>
 ## 公式编辑器
 * [仿通达信公式编辑器](https://jones2000.github.io/HQChart/webhqchart.demo/samples/kline_index_edit.html)  
 * [仿通达信公式编辑器-分时图](https://jones2000.github.io/HQChart/webhqchart.demo/samples/minute_index_edit.html)  
+* [K线+分时](https://jones2000.github.io/HQChart/webhqchart.demo/samples/hqchart_demo.html)  
 
 ## K线图
 * [K线图](https://jones2000.github.io/HQChart/webhqchart.demo/samples/chart_kline.html)   
@@ -496,6 +517,7 @@ React 例子:[demo-react.md](/教程/demo-react.md) <br>
 40. [HQChart使用教程30-K线图如何对接第3方数据40-日K叠加股票增量更新](https://jones2000.blog.csdn.net/article/details/139997350)    
 41. [HQChart使用教程30-K线图如何对接第3方数据41-分钟K线叠加股票增量更新](https://jones2000.blog.csdn.net/article/details/139997565)   
 42. [HQChart使用教程30-K线图如何对接第3方数据42-DRAWTEXTREL,DRAWTEXTABS数据结构](https://blog.csdn.net/jones2000/article/details/144444372)   
+43. [HQChart使用教程30-K线图如何对接第3方数据46-DRAWTEXT_FIX数据结构](https://blog.csdn.net/jones2000/article/details/153072247)   
 
 
 ## 第3方数据前端接入教程(分笔明细)
@@ -678,12 +700,22 @@ React 例子:[demo-react.md](/教程/demo-react.md) <br>
 # 奖项
 ![GVP](/小程序行情模块用例/image/gvp.jpg)
 
+
+
 # 赞助
 ![微信二维码](/小程序行情模块用例/image/wx_code.PNG)
 
+
+
+
+
 # 友情推荐
 * [openctp](https://github.com/openctp/openctp)
-是一个以CTP生态为基础的平台，既提供了华鑫证券奇点、中泰证券XTP、东方财富EMT、东方证券OST等柜台的CTPAPI兼容接口，也提供了一套与上期技术SimNow模拟环境类似的模拟环境，也支持CTPAPI接口，不仅提供国内各期货交易所的期货与期权品种模拟交易，还提供了A股的股票、基金、债券以及股票期权模拟交易，也支持港股、美股等市场模拟交易
+是一个以CTP生态为基础的平台，既提供了华鑫证券奇点、中泰证券XTP、东方财富EMT、东方证券OST等柜台的CTPAPI兼容接口，也提供了一套与上期技术SimNow模拟环境类似的模拟环境，也支持CTPAPI接口，不仅提供国内各期货交易所的期货与期权品种模拟交易，还提供了A股的股票、基金、债券以及股票期权模拟交易，也支持港股、美股等市场模拟交易  
+
+# 感谢[量化开源基金会](https://github.com/OpenQuant-Community/quant-fund)捐赠  
+
+
 
 # Star History
 

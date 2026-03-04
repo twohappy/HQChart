@@ -25,17 +25,9 @@ function JSDialogSearchIndex()
     //{ WindowIndex:窗口索引, OpType:1=切换主图指标 2=添加叠加指标 3=新增指标窗口,  Title: };  
     this.OpData=null;        
 
-    this.TitleColor=g_JSChartResource.DialogSearchIndex.TitleColor;
-    this.TitleBGColor=g_JSChartResource.DialogSearchIndex.TitleBGColor;
-    this.BGColor=g_JSChartResource.DialogSearchIndex.BGColor;
-    this.BorderColor=g_JSChartResource.DialogSearchIndex.BorderColor;
-    this.IndexNameColor=g_JSChartResource.DialogSearchIndex.IndexNameColor;
-    this.GroupNameColor=g_JSChartResource.DialogSearchIndex.GroupNameColor;
-    this.InputTextColor=g_JSChartResource.DialogSearchIndex.InputTextColor;
-
     this.MaxRowCount=30;    //行
     this.ColCount=3;        //列
-    this.MaxGroupCount=10;  //分类最多个数
+    this.MaxGroupCount=20;  //分类最多个数
 
     this.AryData=[];
     this.AryGroup=[];   //分类
@@ -112,9 +104,10 @@ function JSDialogSearchIndex()
 
         var right=left+this.DivDialog.offsetWidth;
         var bottom=top+ this.DivDialog.offsetHeight;
-        
+        var scrollPos=GetScrollPosition();
+
         if ((right+5)>=window.innerWidth) left=window.innerWidth-this.DivDialog.offsetWidth-5;
-        if ((bottom+5)>=window.innerHeight) top=window.innerHeight-this.DivDialog.offsetHeight-5;
+        if ((bottom+5)>=window.innerHeight+scrollPos.Top) top=(window.innerHeight-this.DivDialog.offsetHeight-5)+scrollPos.Top;
 
         this.DivDialog.style.left = left + 'px';
         this.DivDialog.style.top = top + 'px';
@@ -145,8 +138,9 @@ function JSDialogSearchIndex()
         if (!IFrameSplitOperator.IsNumber(x) || !IFrameSplitOperator.IsNumber(y))   //默认居中显示
         {
             var rtClient=this.HQChart.UIElement.getBoundingClientRect();
+            var scrollPos=GetScrollPosition();
             x=rtClient.left+(rtClient.right-rtClient.left-this.DivDialog.offsetWidth)/2;
-            y=rtClient.top+(rtClient.bottom-rtClient.top-this.DivDialog.offsetHeight)/2;
+            y=rtClient.top+(rtClient.bottom-rtClient.top-this.DivDialog.offsetHeight)/2+scrollPos.Top;
         }
 
         this.InputDom.value="";
@@ -307,7 +301,7 @@ function JSDialogSearchIndex()
             var indexItem=cellItem.IndexItem;
             if (indexItem.Type==0 )  //系统指标 
             {
-                this.HQChart.ChangeIndex(this.OpData.WindowIndex, indexItem.ID );
+                this.HQChart.ChangeIndex(this.OpData.WindowIndex, indexItem.ID, indexItem);
             }
             else if(indexItem.Type==4 || indexItem.Type==5) //五彩K线
             {
@@ -316,12 +310,14 @@ function JSDialogSearchIndex()
             else if (indexItem.Type==1) //自定义脚本指标
             {
                 var indexData={ ID:indexItem.ID, Name:indexItem.Name, Script:indexItem.Script, Args:indexItem.Args };
+                if (indexItem.Lock) indexData.Lock=indexItem.Lock;
                 this.HQChart.ChangeScriptIndex(this.OpData.WindowIndex, indexData);
             }
             else if (indexItem.Type==2) //api指标
             {
-                var indedData={ API: { ID:indexItem.ID, Name:indexItem.Name, Args:indexItem.Args, Url:'local'} };
-                this.HQChart.ChangeAPIIndex(this.OpData.WindowIndex, indedData);
+                var indexData={ API: { ID:indexItem.ID, Name:indexItem.Name, Args:indexItem.Args, Url:'local'} };
+                if (indexItem.Lock) indexData.Lock=indexItem.Lock;
+                this.HQChart.ChangeAPIIndex(this.OpData.WindowIndex, indexData);
             }
             else if (indexItem.Type==3) //指标模板
             {
@@ -336,16 +332,19 @@ function JSDialogSearchIndex()
             if (indexItem.Type==0)  //系统指标
             {
                 var obj={ WindowIndex:this.OpData.WindowIndex, IndexName:indexItem.ID };
+                if (indexItem.Lock) obj.Lock=indexItem.Lock;
                 this.HQChart.AddOverlayIndex(obj);
             }
             else if (indexItem.Type==1) //自定义脚本指标
             {
                 var obj={ WindowIndex:this.OpData.WindowIndex, IndexName:indexItem.ID, Name:indexItem.Name, Script:indexItem.Script, Args:indexItem.Args };
+                if (indexItem.Lock) obj.Lock=indexItem.Lock;
                 this.HQChart.AddOverlayIndex(obj);
             }
             else if (indexItem.Type==2) //api指标
             {
                 var obj={ WindowIndex:this.OpData.WindowIndex, API: { ID:indexItem.ID, Name:indexItem.Name, Args:indexItem.Args, Url:'local'} };
+                if (indexItem.Lock) obj.Lock=indexItem.Lock;
                 this.HQChart.AddOverlayIndex(obj);
             }
             else if (indexItem.Type==3) //指标模板
@@ -372,6 +371,7 @@ function JSDialogSearchIndex()
             else if (indexItem.Type==2) //api指标
             {
                 var indexData={ API: { ID:indexItem.ID, Name:indexItem.Name, Args:indexItem.Args, Url:'local'} };
+                if (indexItem.Lock) indexData.Lock=indexItem.Lock;
                 this.HQChart.AddAPIIndexWindow(indexData, this.OpData);
             }
             else if (indexItem.Type==3) //指标模板
@@ -393,15 +393,7 @@ function JSDialogSearchIndex()
 
     this.UpdateStyle=function()
     {
-        if (!this.DivDialog) return;
-
-        if (this.BGColor) this.DivDialog.style['background-color']=this.BGColor;
-        if (this.BorderColor) this.DivDialog.style['border-color']=this.BorderColor;
-
-        if (this.TitleBGColor) this.TitleBox.DivTitle.style['background-color']=this.TitleBGColor;
-        if (this.TitleColor) this.TitleBox.DivName.style['color']=this.TitleColor;
-
-        if (this.InputTextColor) this.InputDom.style['color']=this.InputTextColor;
+       
     };
 
     this.ChangeGroup=function(groupID)
@@ -436,7 +428,6 @@ function JSDialogSearchIndex()
             cell.Span.innerText=item.Group.Name;
             cell.Span.dataset.groupid=item.Group.ID;
             cell.Span.dataset.groupname=item.Group.Name;
-            cell.Span.style.color=this.GroupNameColor;
 
             if (cell.Div.style.display=="none") cell.Div.style.display="";
         }
@@ -462,7 +453,6 @@ function JSDialogSearchIndex()
                 {
                     var indexItem=data.AryIndex[index];
                     cell.Span.innerText=indexItem.Name;
-                    cell.Span.style.color=this.IndexNameColor;
                     if (cell.Td.style.display=="none") cell.Td.style.display="";
                     cell.IndexItem=indexItem;
                     ++index;
@@ -551,17 +541,7 @@ function JSDialogSearchIndex()
     //配色修改
     this.ReloadResource=function(option)
     {
-        this.TitleColor=g_JSChartResource.DialogSearchIndex.TitleColor;
-        this.TitleBGColor=g_JSChartResource.DialogSearchIndex.TitleBGColor;
-        this.BGColor=g_JSChartResource.DialogSearchIndex.BGColor;
-        this.BorderColor=g_JSChartResource.DialogSearchIndex.BorderColor;
-        this.IndexNameColor=g_JSChartResource.DialogSearchIndex.IndexNameColor;
-        this.GroupNameColor=g_JSChartResource.DialogSearchIndex.GroupNameColor;
-        this.InputTextColor=g_JSChartResource.DialogSearchIndex.InputTextColor;
-
-        if (!this.DivDialog) return;
-
-        this.UpdateStyle();
+        
     }
 
 }
@@ -795,8 +775,18 @@ JSDialogSearchIndex.GetDefaultIndexData=function()
                 Group:{ ID:"自定义", Name:"自定义"} , 
                 AryIndex:
                 [
-                    { Name:"收盘线(后台指标)", ID:"CLOSE_LINE", Type:2, Args:null },
-                    { Name:"高低均价(自定义脚本)", ID:"HIGH_LOW_AV", Type:1, Args:null , Script:"均价:(H+L)/2;高:H;低:L;", Args:[ { Name:'N', Value:20}, { Name:'M', Value:6}]},
+                    { Name:"收盘线(后台指标)", ID:"API-DRAWTEXTREL", Type:2, Args:null },
+                    { Name:"高低均价(自定义脚本)", ID:"HIGH_LOW_AV", Type:1, Script:"均价:(H+L)/2;高:H;低:L;", Args:[ { Name:'N', Value:20}, { Name:'M', Value:6}]},
+                    { Name:"指标异常(后台指标)", ID:"API_ERRORMESSAGE", Type:2, Args:null,}
+                ]
+            },
+            {
+                Group:{ ID:"付费指标", Name:"付费指标"} , 
+                AryIndex:
+                [
+                    { Name:"面积图(后台指标)", ID:"API-DRAWBAND", Type:2, Args:null, Lock:{ IsLocked:true } },
+                    { Name:"波段量能跟庄-波段量能", ID:"TEST_INDEX_4AE0_1", Type:0, Lock:{ IsLocked:true } },
+                    { Name:"飞龙八级进-主图", ID:"TEST_INDEX_4AE0_2", Type:0, Lock:{ IsLocked:true } }
                 ]
             },
             {
@@ -862,13 +852,6 @@ function JSDialogModifyIndexParam()
     this.TitleBox=null; //{ DivTitle, DivName, DivName }
     this.Style=0;       //样式 预留
 
-    this.TitleColor=g_JSChartResource.DialogModifyIndexParam.TitleColor;
-    this.TitleBGColor=g_JSChartResource.DialogModifyIndexParam.TitleBGColor;
-    this.BGColor=g_JSChartResource.DialogModifyIndexParam.BGColor;
-    this.BorderColor=g_JSChartResource.DialogModifyIndexParam.BorderColor;
-    this.ParamNameColor=g_JSChartResource.DialogModifyIndexParam.ParamNameColor;
-    this.InputTextColor=g_JSChartResource.DialogModifyIndexParam.InputTextColor;
-
     this.MaxRowCount=30;    //行
 
     this.HQChart=null;
@@ -917,8 +900,9 @@ function JSDialogModifyIndexParam()
         if (!IFrameSplitOperator.IsNumber(x) || !IFrameSplitOperator.IsNumber(y))   //默认居中显示
         {
             var rtClient=this.HQChart.UIElement.getBoundingClientRect();
+            var scrollPos=GetScrollPosition();
             x=rtClient.left+(rtClient.right-rtClient.left-this.DivDialog.offsetWidth)/2;
-            y=rtClient.top+(rtClient.bottom-rtClient.top-this.DivDialog.offsetHeight)/2;
+            y=rtClient.top+(rtClient.bottom-rtClient.top-this.DivDialog.offsetHeight)/2+scrollPos.Top;
         }
 
         this.DivDialog.style.visibility='visible';
@@ -985,9 +969,10 @@ function JSDialogModifyIndexParam()
 
         var right=left+this.DivDialog.offsetWidth;
         var bottom=top+ this.DivDialog.offsetHeight;
-        
+        var scrollPos=GetScrollPosition();
+
         if ((right+5)>=window.innerWidth) left=window.innerWidth-this.DivDialog.offsetWidth-5;
-        if ((bottom+5)>=window.innerHeight) top=window.innerHeight-this.DivDialog.offsetHeight-5;
+        if ((bottom+5)>=window.innerHeight+scrollPos.Top) top=(window.innerHeight-this.DivDialog.offsetHeight-5)+scrollPos.Top;
 
         this.DivDialog.style.left = left + 'px';
         this.DivDialog.style.top = top + 'px';
@@ -1116,8 +1101,9 @@ function JSDialogModifyIndexParam()
         input.className='UMyChart_ModifyIndexParam_Input';
         input.type="number";
         input.step=1;
-        input.addEventListener("mouseup", (e)=>{ this.OnParamMouseUp(e)});
-        input.addEventListener("keyup", (e)=>{ this.OnParamKeyUp(e)})
+        //input.addEventListener("mouseup", (e)=>{ this.OnParamMouseUp(e)});
+        //input.addEventListener("keyup", (e)=>{ this.OnParamKeyUp(e)} );
+        input.addEventListener("input", (e)=>{ this.OnParamInput(e)} );
         tdDom.appendChild(input);
         rowItem.Input=input;
 
@@ -1126,13 +1112,7 @@ function JSDialogModifyIndexParam()
 
     this.UpdateStyle=function()
     {
-        if (!this.DivDialog) return;
-
-        if (this.BGColor) this.DivDialog.style['background-color']=this.BGColor;
-        if (this.BorderColor) this.DivDialog.style['border-color']=this.BorderColor;
-
-        if (this.TitleBGColor) this.TitleBox.DivTitle.style['background-color']=this.TitleBGColor;
-        if (this.TitleColor) this.TitleBox.DivName.style['color']=this.TitleColor;
+       
     };
 
     this.UpdateParamTable=function(aryText)
@@ -1143,10 +1123,9 @@ function JSDialogModifyIndexParam()
             var item=aryText[index];
             var row=this.AryData[index];
             row.SpanName.innerText=`${item.Name}: `;
-            row.SpanName.style.color=this.ParamNameColor;
+           
 
             row.Input.value=item.Value;
-            row.Input.style.color=this.InputTextColor;
             row.Input.dataset.paramid=item.Index;
 
             if (row.Tr.style.display=="none") row.Tr.style.display="";
@@ -1253,6 +1232,7 @@ function JSDialogModifyIndexParam()
         }
     }
 
+    /*
     this.OnParamMouseUp=function(e)
     {
         var input=e.target;
@@ -1263,6 +1243,16 @@ function JSDialogModifyIndexParam()
     }
 
     this.OnParamKeyUp=function(e)
+    {
+        var input=e.target;
+        var value=input.value;
+        var id=input.dataset.paramid;
+
+        this.ModifyParam(id, parseInt(value));
+    }
+    */
+
+    this.OnParamInput=function(e)
     {
         var input=e.target;
         var value=input.value;
@@ -1294,6 +1284,134 @@ function JSDialogModifyIndexParam()
         }
     }
 }
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+//测试指标
+
+
+var TEST_INDEX_4AE0_1=`能量:=SQRT(VOL)*(((C-(H+L)/2))/((H+L)/2));
+平滑能量:=EMA(能量,16);
+能量惯性:EMA(平滑能量,16);
+DRAWICON(能量惯性>0 AND REF(能量惯性,1)<0,0,1);
+STICKLINE(能量惯性>=0,(能量惯性-能量惯性*0.05),(能量惯性-能量惯性*0.15),3,0), COLOR0000CC;
+STICKLINE(能量惯性>=0,(能量惯性-能量惯性*0.2),(能量惯性-能量惯性*0.35),3,0), COLOR0066FF;
+STICKLINE(能量惯性>=0,(能量惯性-能量惯性*0.4),(能量惯性-能量惯性*0.55),3,0),COLOR0099FF;
+STICKLINE(能量惯性>=0,(能量惯性-能量惯性*0.6),(能量惯性-能量惯性*0.75),3,0), COLOR00CCFF;
+STICKLINE(能量惯性>=0,(能量惯性-能量惯性*0.8),(能量惯性-能量惯性*0.95),3,0), COLOR00FFFF;
+STICKLINE(能量惯性<0,(能量惯性-能量惯性*0.05),(能量惯性-能量惯性*0.15),3,0), COLORFF3300;
+STICKLINE(能量惯性<0,(能量惯性-能量惯性*0.2),(能量惯性-能量惯性*0.35),3,0), COLORFF6600;
+STICKLINE(能量惯性<0,(能量惯性-能量惯性*0.4),(能量惯性-能量惯性*0.55),3,0), COLORFF9900;
+STICKLINE(能量惯性<0,(能量惯性-能量惯性*0.6),(能量惯性-能量惯性*0.75),3,0), COLORFFCC00;
+STICKLINE(能量惯性<0,(能量惯性-能量惯性*0.8),(能量惯性-能量惯性*0.95),3,0), COLORFFFF00;`
+
+
+var TEST_INDEX_4AE0_2=`
+MA3:MA(CLOSE,3),COLORWHITE;
+MA17:MA(CLOSE,17),COLORYELLOW;
+QQ:=0,COLORWHITE;
+MA1:=MA(CLOSE,3);
+MA2:=MA(CLOSE,17);
+JG:=CROSS(MA1,MA2);
+VOLUME:=VOL,VOLSTICK;
+MAVOL1:=MA(VOLUME,3);
+MAVOL2:=MA(VOLUME,17);
+NL:=CROSS(MAVOL1,MAVOL2);
+DIF:=EMA(CLOSE,12)-EMA(CLOSE,26);
+DEA:=EMA(DIF,9);
+MACD:=(DIF-DEA)*2,COLORSTICK;
+NA:=CROSS(DIF,DEA);
+RSV:=(CLOSE-LLV(LOW,9))/(HHV(HIGH,9)-LLV(LOW,9))*100;
+K:=SMA(RSV,9,1);
+D:=SMA(K,9,1);
+J:=3*K-2*D;
+KD:=CROSS(K,D) AND CROSS(J,D);
+飞龙八级进:DRAWTEXT((JG AND NL AND NA) OR (JG AND NL AND KD) OR
+(JG AND NA AND KD) OR (NL AND NA AND KD),L*0.95,' 飞龙八级进'),COLORYELLOW;
+X:=LLV(J,2)=LLV(J,8);
+Y:=IF(CROSS(J,REF(J+0.01,1)) AND X AND J<20,30,0);
+DRAWTEXT(CROSS(J,REF(J+0.01,1)) AND X AND J<20,LOW*0.98,''),COLORLIMAGENTA;
+空:=EMA(C,5);
+均衡:=EMA(空,5),COLORWHITE;
+中轨:=HHV(MA(H,13),13),COLORRED,LINETHICK2;
+VAR5:=FILTER(均衡>REF(均衡,1)AND 中轨<REF(中轨,1)AND C>REF(C,1),11);
+DRAWTEXT(VAR5,L*0.98,''),COLORYELLOW;
+PT:=XMA(H,20);
+PAN:=XMA(CLOSE,7),COLORBROWN;
+RUO:=MEMA(CLOSE,3),COLORLIBLUE;
+STICKLINE(CLOSE> REF(CLOSE,1) ,HIGH,LOW,0,1 ),COLORRED;
+STICKLINE(CLOSE> REF(CLOSE,1) ,OPEN,CLOSE,3,0 ),COLOR000055;
+STICKLINE(CLOSE> REF(CLOSE,1) ,OPEN,CLOSE,2.7,0 ),COLOR000077;
+STICKLINE(CLOSE> REF(CLOSE,1) ,OPEN,CLOSE,2.1,0 ),COLOR000099;
+STICKLINE(CLOSE> REF(CLOSE,1) ,OPEN,CLOSE,1.5,0 ),COLOR0000BB;
+STICKLINE(CLOSE> REF(CLOSE,1) ,OPEN,CLOSE,0.9,0 ),COLOR0000DD;
+STICKLINE(CLOSE> REF(CLOSE,1) ,OPEN,CLOSE,0.3,0 ),COLOR0000FF;
+STICKLINE(CLOSE= REF(CLOSE,1) ,HIGH,LOW,0,1 ),COLORWHITE;
+STICKLINE(CLOSE= REF(CLOSE,1) ,OPEN,CLOSE,3,0 ),COLOR555555;
+STICKLINE(CLOSE= REF(CLOSE,1) ,OPEN,CLOSE,2.7,0 ),COLOR777777;
+STICKLINE(CLOSE= REF(CLOSE,1) ,OPEN,CLOSE,2.1,0 ),COLOR999999;
+STICKLINE(CLOSE= REF(CLOSE,1) ,OPEN,CLOSE,1.5,0 ),COLORBBBBBB;
+STICKLINE(CLOSE= REF(CLOSE,1) ,OPEN,CLOSE,0.9,0 ),COLORDDDDDD;
+STICKLINE(CLOSE= REF(CLOSE,1) ,OPEN,CLOSE,0.3,0 ),COLORFFFFFF;
+STICKLINE(CLOSE< REF(CLOSE,1) ,HIGH,LOW,0,1 ),COLORCYAN;
+STICKLINE(CLOSE< REF(CLOSE,1) ,OPEN,CLOSE,3,0 ),COLOR990000;
+STICKLINE(CLOSE< REF(CLOSE,1) ,OPEN,CLOSE,2.7,0 ),COLORCC0000;
+STICKLINE(CLOSE< REF(CLOSE,1) ,OPEN,CLOSE,2.1,0 ),COLORFF4400;
+STICKLINE(CLOSE< REF(CLOSE,1) ,OPEN,CLOSE,1.5,0 ),COLORFF8800;
+STICKLINE(CLOSE< REF(CLOSE,1) ,OPEN,CLOSE,0.9,0 ),COLORFFCC00;
+STICKLINE(CLOSE< REF(CLOSE,1) ,OPEN,CLOSE,0.3,0 ),COLORCYAN;
+高:=REF(HHV(H,80),3);
+低:=REF(LLV(L,80),3);
+H19:=高-(高-低)*0.191;
+H38:=高-(高-低)*0.382;
+H中:=高-(高-低)*0.5;
+H61:=高-(高-低)*0.618;
+H80:=高-(高-低)*0.809;
+顶点:REFDATE(高,DATE),COLORWHITE;
+REFDATE(H19,DATE),COLORYELLOW;
+REFDATE(H38,DATE),COLORMAGENTA;
+REFDATE(H中,DATE),COLORRED;
+REFDATE(H61,DATE),COLORMAGENTA;
+REFDATE(H80,DATE),COLORYELLOW;
+低点:REFDATE(低,DATE),COLORWHITE;
+DRAWTEXT(ISLASTBAR,低点,''),COLORWHITE;
+`
+
+
+//添加测试系统指标
+function AddTestSystemIndex()
+{
+    var aryIndex=[];
+
+    aryIndex.push(
+    { 
+        ID:"TEST_INDEX_4AE0_1",   
+        Name: '波段量能跟庄-波段量能', 
+        Script:TEST_INDEX_4AE0_1,
+        Args: null,
+       
+    });
+
+    
+    aryIndex.push(
+    {   
+        ID:"TEST_INDEX_4AE0_2",              //指标ID                    
+        Name:'飞龙八级进-主图',               //指标名称                    
+        Description:'飞龙八级进',            //描述信息                    
+        IsMainIndex:true,                  //是否是主图指标    
+        Condition: { Period:[CONDITION_PERIOD.KLINE_DAY_ID], Message:"指标(飞龙八级进-主图)只支持日线周期" },                
+        Args:null,                          //指标参数                                      
+        Script:TEST_INDEX_4AE0_2,                
+    });
+
+    JSIndexScript.AddIndex(aryIndex);
+}
+
+
+AddTestSystemIndex();
+
+
+
 
 
 

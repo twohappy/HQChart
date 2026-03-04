@@ -60,6 +60,38 @@ import
     ChartLock
 } from "./umychart.chartpaint.wechat.js"
 
+function IndexLockData()
+{
+    this.IsLocked=false;
+    this.LockCount = 20; // 锁最新的几个数据
+    this.BGColor = g_JSChartResource.IndexLock.BGColor;
+    this.TextColor = g_JSChartResource.IndexLock.TextColor;
+    this.Font = g_JSChartResource.IndexLock.Font;
+    this.Title = g_JSChartResource.IndexLock.Title;
+    this.LockID;        //锁ID
+    this.IndexName;     //指标名字
+    this.IndexID;       //指标ID
+
+    this.SetData=function(lockData)
+    {
+        if (!lockData)  //空 解锁
+        {
+            this.IsLocked=false;
+            return;
+        }
+
+        this.IsLocked=true;
+        if (lockData.Callback) this.Callback=lockData.Callback;       //回调  !!废弃
+        if (lockData.IndexName) this.IndexName=lockData.IndexName;    //指标名字
+        if (lockData.IndexID)  this.IndexID=lockData.IndexID;         //指标ID
+        if (lockData.ID) this.LockID=lockData.ID;                     //锁ID
+        if (lockData.BG) this.BGColor=lockData.BG;                    //背景色 
+        if (lockData.Text) this.Title= lockData.Text;   
+        if (lockData.TextColor) this.TextColor=lockData.TextColor;  
+        if (lockData.Font) this.Font=lockData.Font;
+        if (lockData.Count) this.LockCount=lockData.Count;
+    }
+}
 
 function IChartFramePainting() 
 {
@@ -98,9 +130,10 @@ function IChartFramePainting()
 
     this.IsShowTitleArrow=g_JSChartResource.IndexTitle.EnableIndexArrow;        //是否显示指标信息上涨下跌箭头
     this.TitleArrowType=g_JSChartResource.IndexTitle.ArrowType;             //指标信息上涨下跌箭头类型 0=独立颜色 1=跟指标名字颜色一致
-
+    this.IsSinlgeLine=g_JSChartResource.IndexTitle.IsSinlgeLine;
+    
     //上锁信息
-    this.IsLocked = false;               //是否上锁
+    this.IndexLock=new IndexLockData(); //指标锁
     this.LockPaint = null;
 
     this.BorderLine=null;               //1=上 2=下 4=左 8=右
@@ -220,17 +253,17 @@ function IChartFramePainting()
         */
     }
 
-    this.DrawLock = function () 
+    this.DrawLock=function () 
     {
-        if (this.IsLocked) 
-        {
-            if (this.LockPaint == null) this.LockPaint = new ChartLock();
+        if (!this.LockPaint) return;
+        this.LockPaint.Draw(true);
+    }
 
-            this.LockPaint.Canvas = this.Canvas;
-            this.LockPaint.ChartBorder = this.ChartBorder;
-            this.LockPaint.ChartFrame = this;
-            this.LockPaint.Draw();
-        }
+    this.CalculateLock=function(aryData)
+    {
+        if (!this.LockPaint) return;
+        this.LockPaint.SetData(aryData);
+        this.LockPaint.Draw(false);
     }
 
     this.DrawLogo=function()
@@ -261,30 +294,23 @@ function IChartFramePainting()
         }   
     }
 
+    //创建锁图形
+    this.CreateLockPaint=function()
+    {
+        this.LockPaint=new ChartLock();
+        this.LockPaint.Canvas=this.Canvas;
+        this.LockPaint.ChartBorder=this.ChartBorder;
+        this.LockPaint.ChartFrame=this;
+    }
+
     //设施上锁
     this.SetLock = function (lockData) 
     {
-        if (!lockData)  //空数据不上锁
-        {
-            this.IsLocked = false;
-            return;
-        }
-
-        this.IsLocked = true;
-        if (!this.LockPaint) this.LockPaint = new ChartLock();    //创建锁
-        if (lockData.Callback) this.LockPaint.Callback = lockData.Callback;       //回调
-        if (lockData.IndexName) this.LockPaint.IndexName = lockData.IndexName;    //指标名字
-        if (lockData.ID) this.LockPaint.LockID = lockData.ID;                     //锁ID
-        if (lockData.BG) this.LockPaint.BGColor = lockData.BG;                    //背景色 
-        if (lockData.Text) this.LockPaint.Title = lockData.Text;
-        if (lockData.TextColor) this.LockPaint.TextColor = lockData.TextColor;
-        if (lockData.Font) this.LockPaint.Font = lockData.Font;
-        if (lockData.Count) this.LockPaint.LockCount = lockData.Count;
+        this.IndexLock.SetData(lockData);
     }
 
     this.GetLockRect=function()
     {
-        if (!this.IsLocked) return null;
         if (!this.LockPaint) return null; 
         return this.LockPaint.LockRect;
     }
@@ -303,6 +329,16 @@ function IChartFramePainting()
 
         var isMinute=aryName.includes(this.ClassName);
         return isMinute;
+    }
+
+    //bIncludeOverlay =false不包含叠加框架  true=主框架+叠加框架 默认true
+    this.IsKLineFrame=function(bIncludeOverlay)
+    {
+        var aryName=["KLineFrame", "KLineHScreenFrame", "KLineHScreenFrame", "OverlayKLineHScreenFrame"];
+        if (bIncludeOverlay===false) aryName=["KLineFrame", "KLineHScreenFrame"];
+
+        var isKline=aryName.includes(this.ClassName);
+        return isKline;
     }
 }
 
@@ -1807,6 +1843,13 @@ function OverlayMinuteFrame()
     this.IsShow=true;               //坐标是否显示
     this.IsShareY=false;            //使用和主框架公用Y轴
     this.IsCalculateYMaxMin=true;   //是否计算Y最大最小值
+    this.MainFrame=null;            //主框架
+
+    this.GetLockRect=function()
+    {
+        if (!this.MainFrame || !this.MainFrame.GetLockRect) return null;
+        return this.MainFrame.GetLockRect();
+    }
 
     this.Draw=function()
     {
@@ -1858,6 +1901,13 @@ function OverlayMinuteHScreenFrame()
 
     this.ClassName="OverlayMinuteHScreenFrame";
     this.IsShow=true;                   //坐标是否显示
+    this.MainFrame=null;                //主框架
+
+    this.GetLockRect=function()
+    {
+        if (!this.MainFrame || !this.MainFrame.GetLockRect) return null;
+        return this.MainFrame.GetLockRect();
+    }
 
     this.Draw=function()
     {
@@ -2863,6 +2913,12 @@ function OverlayKLineFrame()
         }
     }
 
+    this.GetLockRect=function()
+    {
+        if (!this.MainFrame || !this.MainFrame.GetLockRect) return null;
+        return this.MainFrame.GetLockRect();
+    }
+
     this.Draw=function()
     {
         this.Buttons=[];
@@ -2988,6 +3044,12 @@ function OverlayKLineHScreenFrame()
     this.Title=null;
     this.TitleColor=g_JSChartResource.OverlayFrame.TitleColor;
     this.TitleFont=g_JSChartResource.OverlayFrame.TitleFont;
+
+    this.GetLockRect=function()
+    {
+        if (!this.MainFrame || !this.MainFrame.GetLockRect) return null;
+        return this.MainFrame.GetLockRect();
+    }
 
     this.Draw=function()
     {

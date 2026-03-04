@@ -55576,6 +55576,15 @@ HQData.NetworkFilter=function(data, callback)
             HQData.RequestMinuteRealtimeData(data,callback);
             break;
 
+        case "KLineChartContainer::RequestTickData":
+            //HQChart使用教程30-K线图如何对接第3方数据5-逐笔数据
+            HQData.RequestKLineTickData(data,callback);
+            break;
+        case "KLineChartContainer::RequestTickRealtimeData":
+            //HQChart使用教程30-K线图如何对接第3方数据16-轮询增量更新逐笔数据
+            HQData.RequestTickRealtimeData(data,callback);
+            break;
+
         case "JSSymbolData::GetVariantData":                            //额外的变量数据
             //HQChart使用教程30-K线图如何对接第3方数据29-板块字符串函数数据[GNBLOCK,GNBLOCKNUM......]
             HQData.RequestIndexVariantData(data,callback);
@@ -55636,6 +55645,7 @@ HQData.NetworkFilter=function(data, callback)
             break;
 
         case "JSSymbolData::GetFinance":    //财务数据
+            //HQChart使用教程30-K线图如何对接第3方数据23- FINANCE函数数据
             HQData.Finance_RequestData(data,callback);
             break;
 
@@ -55659,6 +55669,7 @@ HQData.NetworkFilter=function(data, callback)
             HQData.BKJYOne_RequestData(data,callback);
             break;
         case "JSSymbolData::GetFinValue":
+            //HQChart使用教程30-K线图如何对接第3方数据22- FINVALUE函数数据
             HQData.FinValue_RequestData(data,callback);
             break;
         case "JSSymbolData::GetFinOne":
@@ -55666,8 +55677,18 @@ HQData.NetworkFilter=function(data, callback)
             break;
 
         case "JSSymbolData::GetIndexData":
+            //HQChart使用教程30-K线图如何对接第3方数据28-大盘数据[INDEXA,INDEXC......]
             HQData.INDEX_RequestData(data,callback);
             break;
+
+        case "JSSymbolData::GetIndustryData":
+            HQData.INDUSTRY_RequestData(data,callback);
+            break;
+
+        case 'JSSymbolData::GetSymbolData':   
+            //HQChart使用教程30-K线图如何对接第3方数据38-通达信指标K线数据
+            HQData.RequestSymbolData(data,callback);        //计算指标需要的K线数据
+            break;   
 
         //////////////////////////////////////////////////////
         //报价列表数据
@@ -55796,35 +55817,69 @@ HQData.Minute_RequestMinuteData=function(data, callback)
             }
             */
 
-            var before=[];
-            var beforeinfo={ totalcount:60*10, ver:2.0, TimeConfig:{ AryTime:[{ Start:91500, End:92459, Date:srcStock.date }]} };  //9:15-9:25 集合竞价15分钟 1s一个数据 
-            var price=srcStock.yclose+0.01;
+            if (symbol=="000001.sh")    //指数
+            {
+                var before=[];
+                var beforeinfo={ totalcount:60*10, ver:3.0, TimeConfig:{ AryTime:[{ Start:91500, End:92459, Date:srcStock.date }]} };  //9:15-9:25 集合竞价15分钟 1s一个数据 
+                var price=srcStock.yclose+0.01;
+                var vol=0;
 
-            var date=new Date(2021,5,2, 9,15, 0);
-            before=
-            [
-                [91505,price+0.01, 400, 300, 1, 800],
-                [91550,price+0.02, 550, 600, 0, 1500],
-                [91603,price+0.03, 300, 600, 1, 3600],
-                [91613,price+0.03, 150, 320, 1, 3600],
-                [91623,price+0.04, 200, 400, 1, 3600],
-                [91635,price+0.05, 100, 100, 1, 3600],
-                [91640,price+0.03, 350, 210, 2, 1600],
-                [91711,price+0.02, 3210, 350, 2, 3700],
-                [91731,price+0.04, 110, 450, 1, 3700],
-                [91825,price-0.01, 210, 650, 2, 3700],
-                [91855,price-0.02, 330, 440, 1, 1000],
-                [91915,price-0.03, 630, 640, 1, 1200],
-                [92022,price+0.01, 260, 550, 2, 1000],
-                [92304,price-0.02, 300, 100, 2, 1000],
-                [92314,price-0.03, 550, 150, 2, 1000],
-                [92344,price-0.04, 550, 150, 1, 1000],
-                [92357,price-0.05, 250, 750, 1, 1500],
-                [92405,price-0.07, 450, 50, 2, 1000],
-                [92435,price-0.08, 650, 250, 1, 1000],
-                [92458,price-0.12, 350, 350, 2, 1000],
-            ];
-           
+                var date=new Date(2021,5,2, 9,15, 0);
+                var testData={ Up:1, Max:srcStock.yclose*1.02, Min:srcStock.yclose*0.98 };
+
+                for(var i=0;i<beforeinfo.totalcount; ++i)  //3s一个数据
+                {
+                    var time=date.getHours()*10000+date.getMinutes()*100+date.getSeconds();
+                    vol=HQData.GetRandomTestData(100,500)*1000;
+                    var item=[ time, price, price+0.04, vol, 3, vol*1.3 ];
+                    before.push(item);
+
+                    if (price>testData.Max && testData.Up===1)
+                        testData.Up=0;
+                    else if (price<testData.Min && testData.Up===0)
+                        testData.Up=1;
+
+                    var value=HQData.GetRandomTestData(1,10)/100;
+                    if (testData.Up==1) price+=value;
+                    else price-=value;
+
+                    date.setSeconds(date.getSeconds()+3);
+                    time=date.getHours()*10000+date.getMinutes()*100+date.getSeconds();
+                    if (time>92500) break;
+                }
+
+            }
+            else    //股票
+            {
+                var before=[];
+                var beforeinfo={ totalcount:60*10, ver:2.0, TimeConfig:{ AryTime:[{ Start:91500, End:92459, Date:srcStock.date }]} };  //9:15-9:25 集合竞价15分钟 1s一个数据 
+                var price=srcStock.yclose+0.01;
+
+                var date=new Date(2021,5,2, 9,15, 0);
+                before=
+                [
+                    [91505,price+0.01, 400, 300, 1, 800],
+                    [91550,price+0.02, 550, 600, 0, 1500],
+                    [91603,price+0.03, 300, 600, 1, 3600],
+                    [91613,price+0.03, 150, 320, 1, 3600],
+                    [91623,price+0.04, 200, 400, 1, 3600],
+                    [91635,price+0.05, 100, 100, 1, 3600],
+                    [91640,price+0.03, 350, 210, 2, 1600],
+                    [91711,price+0.02, 3210, 350, 2, 3700],
+                    [91731,price+0.04, 110, 450, 1, 3700],
+                    [91825,price-0.01, 210, 650, 2, 3700],
+                    [91855,price-0.02, 330, 440, 1, 1000],
+                    [91915,price-0.03, 630, 640, 1, 1200],
+                    [92022,price+0.01, 260, 550, 2, 1000],
+                    [92304,price-0.02, 300, 100, 2, 1000],
+                    [92314,price-0.03, 550, 150, 2, 1000],
+                    [92344,price-0.04, 550, 150, 1, 1000],
+                    [92357,price-0.05, 250, 750, 1, 1500],
+                    [92405,price-0.07, 450, 50, 2, 1000],
+                    [92435,price-0.08, 650, 250, 1, 1000],
+                    [92458,price-0.12, 350, 350, 2, 1000],
+                ];
+            }
 
             stockItem.before=before;
             stockItem.beforeinfo=beforeinfo;
@@ -55907,27 +55962,51 @@ HQData.Minute_RequestMinuteData=function(data, callback)
             }
             */
 
-            var afterData=[]
-            var afterInfo={ ver:2.0, totalcount:60*3, TimeConfig:{ AryTime:[{ Start:145700, End:145959, Date:srcStock.date }]}  }     //14:57-15:00
-            if (stockItem.minute.length>=240)
+            if (symbol=="000001.sh")    //指数
             {
-                afterData=
-                [
-                    [145708,price+0.01, 400, 300, 1, 800],
-                    [145718,price+0.02, 550, 600, 0, 1500],
-                    [145738,price+0.02, 150, 800, 0, 1500],
-                    [145748,price+0.02, 150, 800, 0, 1500],
-                    [145803,price+0.03, 300, 600, 1, 3600],
-                    [145815,price+0.03, 350, 210, 2, 1600],
-                    [145826,price+0.02, 1210, 350, 2, 2700],
-                    [145833,price+0.01, 260, 550, 2, 1000],
-                    [145845,price+0.02, 160, 750, 2, 1000],
-                    [145858,price-0.01, 460, 650, 2, 1500],
-                    [145905,price-0.02, 160, 450, 1, 1500],
-                    [145928,price-0.02, 260, 250, 1, 1500],
-                    [145948,price-0.02, 860, 150, 1, 1500],
-                ];
+                var afterData=[]
+                var afterInfo={ ver:3.0, totalcount:60*3, TimeConfig:{ AryTime:[{ Start:145700, End:145959, Date:srcStock.date }]}  }     //14:57-15:00
+                var date=new Date(2021,5,2, 14,57, 0);
+                var vol=0;
+                for(var i=0;i<afterInfo.totalcount; ++i)  //1s一个数据
+                {
+                    var time=date.getHours()*10000+date.getMinutes()*100+date.getSeconds();
+                    
+                    vol=HQData.GetRandomTestData(100,500)*1000;
+                    var item=[ time, price, price+0.04, vol, 3, vol*1.3 ];
+                    
+                    afterData.push(item);
+
+                    date.setSeconds(date.getSeconds()+3);
+                    var time=date.getHours()*10000+date.getMinutes()*100+date.getSeconds();
+                    if (time>145959) break;
+                }
             }
+            else
+            {
+                var afterData=[]
+                var afterInfo={ ver:2.0, totalcount:60*3, TimeConfig:{ AryTime:[{ Start:145700, End:145959, Date:srcStock.date }]}  }     //14:57-15:00
+                if (stockItem.minute.length>=240)
+                {
+                    afterData=
+                    [
+                        [145708,price+0.01, 400, 300, 1, 800],
+                        [145718,price+0.02, 550, 600, 0, 1500],
+                        [145738,price+0.02, 150, 800, 0, 1500],
+                        [145748,price+0.02, 150, 800, 0, 1500],
+                        [145803,price+0.03, 300, 600, 1, 3600],
+                        [145815,price+0.03, 350, 210, 2, 1600],
+                        [145826,price+0.02, 1210, 350, 2, 2700],
+                        [145833,price+0.01, 260, 550, 2, 1000],
+                        [145845,price+0.02, 160, 750, 2, 1000],
+                        [145858,price-0.01, 460, 650, 2, 1500],
+                        [145905,price-0.02, 160, 450, 1, 1500],
+                        [145928,price-0.02, 260, 250, 1, 1500],
+                        [145948,price-0.02, 860, 150, 1, 1500],
+                    ];
+                }
+            }
+           
             stockItem.after=afterData;
             stockItem.afterinfo=afterInfo;
         }
@@ -55981,16 +56060,50 @@ HQData.Minute_RequestMinuteUpdateData=function(data, callback)
 
         if (callcation.Before)
         {
-            var beforeinfo={ totalcount:60*10, ver:2.0, TimeConfig:{ AryTime:[{ Start:91500, End:92459, Date:srcStock.date }]} };  //9:15-9:25 集合竞价15分钟 1s一个数据 
-            var price=srcStock.yclose-0.01;
-            var before=
-            [
-                [92344,price-0.03, 150, 150, 2, 1000],
-                [92357,price-0.04, 250, 250, 2, 1500],
-                [92405,price-0.05, 350, 350, 1, 1000],
-                [92435,price-0.06, 450, 450, 1, 1000],
-                [92458,price-0.07, 550, 550, 2, 1000],
-            ];
+            if (symbol=="000001.sh")    //指数
+            {
+                var before=[];
+                var beforeinfo={ totalcount:60*10, ver:3.0, TimeConfig:{ AryTime:[{ Start:91500, End:92459, Date:srcStock.date }]} };  //9:15-9:25 集合竞价15分钟 1s一个数据 
+                var price=srcStock.yclose+0.01;
+                var vol=0;
+
+                var date=new Date(2021,5,2, 9,15, 0);
+                var testData={ Value:0.01, Up:1, Max:srcStock.yclose*1.02, Min:srcStock.yclose*0.98 };
+
+                for(var i=0;i<beforeinfo.totalcount; ++i)  //3s一个数据
+                {
+                    vol=HQData.GetRandomTestData(100,500)*1000;
+                    var time=date.getHours()*10000+date.getMinutes()*100+date.getSeconds();
+                    var item=[ time, price, price+0.04, vol, 3, vol*1.3 ];
+                    before.push(item);
+
+                    if (price>testData.Max && testData.Up===1)
+                        testData.Up=0;
+                    else if (price<testData.Min && testData.Up===0)
+                        testData.Up=1;
+
+                    var value=HQData.GetRandomTestData(1,10)/100;
+                    if (testData.Up==1) price+=value;
+                    else price-=value;
+
+                    date.setSeconds(date.getSeconds()+3);
+                    time=date.getHours()*10000+date.getMinutes()*100+date.getSeconds();
+                    if (time>92500) break;
+                }
+            }
+            else
+            {
+                var beforeinfo={ totalcount:60*10, ver:2.0, TimeConfig:{ AryTime:[{ Start:91500, End:92459, Date:srcStock.date }]} };  //9:15-9:25 集合竞价15分钟 1s一个数据 
+                var price=srcStock.yclose-0.01;
+                var before=
+                [
+                    [92344,price-0.03, 150, 150, 2, 1000],
+                    [92357,price-0.04, 250, 250, 2, 1500],
+                    [92405,price-0.05, 350, 350, 1, 1000],
+                    [92435,price-0.06, 450, 450, 1, 1000],
+                    [92458,price-0.07, 550, 550, 2, 1000],
+                ];
+            }
 
             stockItem.before=before;
             stockItem.beforeinfo=beforeinfo;
@@ -55998,30 +56111,57 @@ HQData.Minute_RequestMinuteUpdateData=function(data, callback)
 
         if (callcation.After)
         {
-            var afterInfo={ totalcount:60*10, ver:2.0, TimeConfig:{ AryTime:[{ Start:145700, End:145959, Date:srcStock.date }]} };  //9:15-9:25 集合竞价15分钟 1s一个数据 
-            var afterData=[];
-
-            if (IFrameSplitOperator.IsNonEmptyArray(lastItem) && lastItem[1]>=1457)
+            if (symbol=="000001.sh")    //指数
             {
-                var price=lastItem[5];
-                afterData=
-                [
-                    [145708,price+0.01, 400, 300, 1, 800],
-                    [145718,price+0.02, 550, 600, 0, 1500],
-                    [145738,price+0.02, 150, 800, 0, 1500],
-                    [145748,price+0.02, 150, 800, 0, 1500],
-                    [145803,price+0.03, 300, 600, 1, 3600],
-                    [145815,price+0.03, 350, 210, 2, 1600],
-                    [145826,price+0.02, 1210, 350, 2, 2700],
-                    [145833,price+0.01, 260, 550, 2, 1000],
-                    [145845,price+0.02, 160, 750, 2, 1000],
-                    [145858,price-0.01, 460, 650, 2, 1500],
-                    [145905,price-0.02, 160, 450, 1, 1500],
-                    [145928,price-0.02, 260, 250, 1, 1500],
-                    [145948,price-0.02, 860, 150, 1, 1500],
-                ];
-            }
+                var afterData=[]
+                var afterInfo={ ver:3.0, totalcount:60*3, TimeConfig:{ AryTime:[{ Start:145700, End:145959, Date:srcStock.date }]}  }     //14:57-15:00
+                if (IFrameSplitOperator.IsNonEmptyArray(lastItem) && lastItem[1]>=1457)
+                {
+                    var price=lastItem[5];
+                    var date=new Date(2021,5,2, 14,57, 0);
+                    var vol=0;
+                    for(var i=0;i<afterInfo.totalcount; ++i)  //1s一个数据
+                    {
+                        var time=date.getHours()*10000+date.getMinutes()*100+date.getSeconds();
+                        
+                        vol=HQData.GetRandomTestData(100,500)*1000;
+                        var item=[ time, price, price+0.04, vol, 3, vol*1.3 ];
+                        
+                        afterData.push(item);
 
+                        date.setSeconds(date.getSeconds()+3);
+                        var time=date.getHours()*10000+date.getMinutes()*100+date.getSeconds();
+                        if (time>145959) break;
+                    }
+                }
+            }
+            else
+            {
+                var afterInfo={ totalcount:60*10, ver:2.0, TimeConfig:{ AryTime:[{ Start:145700, End:145959, Date:srcStock.date }]} };  //9:15-9:25 集合竞价15分钟 1s一个数据 
+                var afterData=[];
+
+                if (IFrameSplitOperator.IsNonEmptyArray(lastItem) && lastItem[1]>=1457)
+                {
+                    var price=lastItem[5];
+                    afterData=
+                    [
+                        [145708,price+0.01, 400, 300, 1, 800],
+                        [145718,price+0.02, 550, 600, 0, 1500],
+                        [145738,price+0.02, 150, 800, 0, 1500],
+                        [145748,price+0.02, 150, 800, 0, 1500],
+                        [145803,price+0.03, 300, 600, 1, 3600],
+                        [145815,price+0.03, 350, 210, 2, 1600],
+                        [145826,price+0.02, 1210, 350, 2, 2700],
+                        [145833,price+0.01, 260, 550, 2, 1000],
+                        [145845,price+0.02, 160, 750, 2, 1000],
+                        [145858,price-0.01, 460, 650, 2, 1500],
+                        [145905,price-0.02, 160, 450, 1, 1500],
+                        [145928,price-0.02, 260, 250, 1, 1500],
+                        [145948,price-0.02, 860, 150, 1, 1500],
+                    ];
+                }
+            }
+            
             stockItem.after=afterData;
             stockItem.afterinfo=afterInfo;
         }
@@ -56358,6 +56498,7 @@ HQData.Minute_RequestHistoryMinuteData=function(data, callback)
         dayItem.BuySellData={ AryBuy:aryBuy, ArySell:arySell };
     }
    
+    aryDay[0].minute.length=20;
     var hqchartData={code:0, data:aryDay, name:symbol, symbol: symbol};
 
     //hqchartData.data[0].minute.length=45;
@@ -56612,6 +56753,50 @@ HQData.RequestMinuteRealtimeData=function(data,callback)
 }
 
 
+HQData.RequestKLineTickData=function(data,callback)
+{
+    data.PreventDefault=true;
+    var symbol=data.Request.Data.symbol;
+    console.log(`[HQData::RequestKLineTickData] Symbol=${symbol}`);
+
+    var hqchartData={ code:0, symbol:symbol, name:symbol, data:[], ver:2.0 };
+    for(var i=0;i<MSECOND_TEST_DATA.data.length-100;++i)
+    {
+        var item=MSECOND_TEST_DATA.data[i];
+        var flag=HQData.GetRandomTestData(1,10)%3;
+        var kItem=[item[0], parseInt(item[8]/1000), item[1], item[5], item[6]*1000, item[7], flag ];
+        hqchartData.data.push(kItem);
+    }
+    
+    callback(hqchartData);
+}
+
+HQData.RequestTickRealtimeData=function(data,callback)
+{
+    data.PreventDefault=true;
+    var symbol=data.Request.Data.symbol; //请求的股票代码
+    var dateRange=data.Request.Data.dateRange;
+    var endTime=dateRange.End.Time;
+    var endDate=dateRange.End.Date;
+
+    var hqchartData={ code:0, symbol:symbol, name:symbol, data:[], ver:2.0 };
+    for(var i=0;i<MSECOND_TEST_DATA.data.length;++i)
+    {
+        var item=MSECOND_TEST_DATA.data[i];
+        var time=parseInt(item[8]/1000);
+        if (time>endTime) 
+        {
+            var flag=HQData.GetRandomTestData(1,10)%3;
+            var kItem=[item[0], time, item[1], item[5], item[6]*1000, item[7], flag ];
+            hqchartData.data.push(kItem);
+            break;
+        }
+    }
+
+    callback(hqchartData);
+}
+
+
 HQData.RequestIndexVariantData=function(data,callback)
 {
     data.PreventDefault=true;
@@ -56717,6 +56902,23 @@ HQData.CustomFunction_RequestData=function(data, callback)
             hqchartData.Data.push({ Date:kItem.Date, Time:kItem.Time, Value:kItem.Vol/3 });
         }
     }
+    else if (funcName=="FUNC_ALPHA")
+    {
+        //模拟下载alpha系数序列
+        setTimeout(()=>
+        {
+            var kData=data.Self.Data;
+            var hqchartData={ DataType:2, Data:[] };
+            for(var i=0;i<kData.Data.length;++i)
+            {
+                var kItem=kData.Data[i];
+                hqchartData.Data.push({ Date:kItem.Date, Time:kItem.Time, Value:HQData.GetRandomTestData(0,100)/100 });
+            }
+             callback(hqchartData);
+        },300);
+
+        return;
+    }
     else
     {
         var error= `函数'${funcName}' 没有对接数据. [HQData.CustomFunction_RequestData]`;
@@ -56724,6 +56926,21 @@ HQData.CustomFunction_RequestData=function(data, callback)
     }
     
     callback(hqchartData);
+}
+
+//ALPHA:FUNC_ALPHA(L);
+HQData.FUNC_ALPHA=function(obj)
+{
+    console.log("[HQData::FuncAlpha] obj=", obj);
+    var aryValue=obj.Args[0];           //参数
+    var aryAlpha=obj.DownloadData;      //下载数据
+    var aryData=[];
+    for(var i=0; i<aryValue.length; ++i)
+    {
+        aryData.push(aryValue[i]*aryAlpha[i]);
+    }
+
+    return { Out:aryData };
 }
 
 HQData.CustomVarData_RequestData=function(data, callback)
@@ -57164,6 +57381,44 @@ HQData.INDEX_RequestData=function(data,callback)
     callback(hqchartData);
 }
 
+HQData.INDUSTRY_RequestData=function(data, callback)
+{
+    data.PreventDefault=true;
+    var period=data.Period;
+    var symbol=data.Request.Data.symbol;
+    var indexSymbol="399001.sz";
+    var dateRange=data.Request.Data.dateRange;
+    var aryData=[];
+    if (ChartData.IsMinutePeriod(period, true))
+    {
+        var fullData=HQData.GetM1KLineDataBySymbol(symbol);
+        if (fullData) aryData=HQData.GetKLineDataByDateTime(fullData, dateRange.Start.Date, dateRange.Start.Time, dateRange.End.Date, dateRange.End.Time);
+    }
+    else if (ChartData.IsDayPeriod(period,true))
+    {
+        var fullData=HQData.GetDayKLineDataBySymbol(indexSymbol);
+        if (fullData) aryData=HQData.GetKLineDataByDate(fullData, dateRange.Start.Date, dateRange.End.Date);
+    }
+
+    var hqchartData={ name:indexSymbol, symbol:indexSymbol, data:aryData, ver:2.0 };
+
+    callback(hqchartData);
+}
+
+HQData.RequestSymbolData=function(data,callback)
+{
+    data.PreventDefault=true;
+    var symbol=data.Request.Data.symbol;
+    var period=data.Request.Data.period;
+    //if (this.Chart.JSChartContainer.Symbol==symbol)
+    {
+        if (ChartData.IsDayPeriod(period, true))
+            HQData.RequestHistoryData(data, callback);
+        else if (ChartData.IsMinutePeriod(peirod, true))
+            HQData.RequestHistoryMinuteData(data, callback);
+    }
+}
+
 //////////////////////////////////////////////////////////////////////////////////////
 // 报价列表
 //
@@ -57349,6 +57604,16 @@ HQData.Report_RequestStockData=function(data, callback)
 
                 //K线
                 var kData={ Data:[newItem[3], newItem[4], newItem[5], newItem[6]] };
+                //多根K线使用AryData， 单根K线用Data
+                kData.AryData=
+                [
+                    [newItem[3], newItem[4], newItem[5], newItem[6]],
+                    [newItem[3], newItem[4], newItem[5], newItem[6]],
+                    [newItem[3], newItem[4], newItem[5], newItem[6]],
+                    [newItem[3], newItem[4], newItem[5], newItem[6]],
+                    [newItem[3], newItem[4], newItem[5], newItem[6]],
+                    [newItem[3], newItem[4], newItem[5], newItem[6]],
+                ]
                 newItem[33]=kData;
 
 
@@ -57362,6 +57627,9 @@ HQData.Report_RequestStockData=function(data, callback)
                 var testDate=new Date();
                 testDate.setHours(testDate.getHours() + i*2)
                 newItem[401]={ DateTime:testDate } ;
+
+
+                newItem[JSCHART_DATA_FIELD_ID.REPORT_EXTENDDATA]={ Value:"ddddd" };
                 
 
                 item.Data=newItem;
@@ -58079,12 +58347,21 @@ HQData.Report_APIIndex=function(data, callback)
         HQData.APIIndex_SCATTER_PLOT_V2(data, callback);
     else if (request.Data.indexname=="API_KLINE_TABLE")
         HQData.APIIndex_KLINE_TABLE(data, callback);
+    else if (request.Data.indexname=="API_MINUTE_TABLE")
+        HQData.APIIndex_MINUTE_TABLE(data, callback);
     else if (request.Data.indexname=="API_DRAWSVG")
         HQData.APIIndex_DRAWSVG(data, callback); 
     else if (request.Data.indexname=="API_BASELINE_BAR")
         HQData.APIIndex_BASELINE_BAR(data, callback);
     else if (request.Data.indexname=="API_VERTLINE")
         HQData.APIIndex_VERTLINE(data, callback);
+    else if (request.Data.indexname=="API_DRAWTEXT_FIX")
+        HQData.APIIndex_DRAWTEXT_FIX(data, callback);
+    else if (request.Data.indexname=="API_DRAWNUMBER_FIX")
+        HQData.APIIndex_DRAWNUMBER_FIX(data, callback);
+
+    else if (request.Data.indexname=="API_ERRORMESSAGE")
+        HQData.APIIndex_ErrorMessage(data, callback);
 
 
     //付费图形
@@ -58807,6 +59084,7 @@ HQData.APIIndex_MULTI_BAR=function(data, callback)
             //{Date:20190916, Time: Value:15.5, Value2:0 },
         ],
         //Width:10
+        AdWidth:{ Type:1, Value:0.8 }
     };
 
     var point2=
@@ -58820,6 +59098,7 @@ HQData.APIIndex_MULTI_BAR=function(data, callback)
             //{Date:20190916, Time: Value:15.5, Value2:0 },
         ],
         //Width:10
+        AdWidth:{ Type:1, Value:0.5 }
     };
 
     for(var i=0;i<kData.Data.length;++i)
@@ -59146,6 +59425,8 @@ HQData.APIIndex_SCATTER_PLOT_V2=function(data, callback)
             };
         }
 
+        //if ((i%6)==2) item.Radius2=20;
+
 
         item.Tooltip=
         [
@@ -59183,7 +59464,13 @@ HQData.APIIndex_KLINE_TABLE=function(data, callback)
             DrawType:'KLINE_TABLE', 
             DrawData:[ ] ,                                      //数据  [ [ { Text, Color: BGColor }, ...... ], [],]
             RowCount:4,
-            RowName:[ {Name:"账户[*9993]",TextAlign:"center", Color:"rgb(124, 252, 0)"}, {Name:"账户[*8881]",TextAlign:"center", Color:"rgb(238, 99, 9)"}, {Name:"账户3",TextAlign:"center"},{Name:"账户4", TextAlign:"center"}],
+            RowName:
+            [ 
+                {Name:"账户[*9993]",TextAlign:"center", Color:"rgb(124, 252, 0)"}, 
+                {Name:"账户[*8881]",TextAlign:"center", Color:"rgb(238, 99, 9)", BGColor:"rgb(100,0,200)" }, 
+                {Name:"账户3",TextAlign:"center"},
+                {Name:"账户4", TextAlign:"center"}
+            ],
 
             Config:
             {
@@ -59194,7 +59481,9 @@ HQData.APIIndex_KLINE_TABLE=function(data, callback)
                 RowNamePosition:3,
                 TextFont:{ Family:'微软雅黑' , FontMaxSize:14*GetDevicePixelRatio(), },
                 RowHeightType:0,
-                Style:1
+                Style:1,
+
+                AryBorderColor:[null, "rgb(100,20,200)", "rgb(200,0,100)"]
             }
         },
         
@@ -59207,6 +59496,7 @@ HQData.APIIndex_KLINE_TABLE=function(data, callback)
         { Name:"账户3", DayCount:4, OperatorID:0 },
         { Name:"账户4", DayCount:8, OperatorID:0 },
     ]
+    
     
     for(var i=0;i<kData.Data.length;++i)   
     {
@@ -59268,6 +59558,7 @@ HQData.APIIndex_KLINE_TABLE=function(data, callback)
 
         tableData.Draw.DrawData.push(colItem);
     }
+    
 
     var apiData=
     {
@@ -59277,6 +59568,114 @@ HQData.APIIndex_KLINE_TABLE=function(data, callback)
     };
 
     console.log('[KLineChart::APIIndex_KLINE_TABLE] apiData ', apiData);
+    callback(apiData);
+}
+
+
+HQData.APIIndex_MINUTE_TABLE=function(data, callback)
+{
+    data.PreventDefault=true;
+    var hqchart=data.HQChart;
+    var kData=data.HQChart.GetKData(); //hqchart图形的分钟数据
+
+    var tableData= 
+    { 
+        name:'JS_CHART_MINUTETABLE_9DFC', type:1, 
+        Draw: 
+        { 
+            DrawType:'JS_CHART_MINUTETABLE_9DFC', 
+            DrawData:[ ] ,                                      //数据  [ [ { Text, Color: BGColor }, ...... ], [],]
+
+            Config:
+            {
+                //BGColor:"rgba(238,232,205,0.5)",
+                //BorderColor:"rgb(220,220,220)",
+                TextColor:"rgb(250,250,250)",
+                ItemMergin:{ Left:1, Right:1, Top:0, Bottom:0, YOffset:0 },
+                TextFont:{ Family:'微软雅黑' , FontMaxSize:14*GetDevicePixelRatio(), },
+                Style:1,
+                CellWidth:18*GetDevicePixelRatio(),
+                CellHeight:14*GetDevicePixelRatio(),
+                RowCount:2,
+                LineColor:"rgb(5,105,225)",
+                LineDash:[5*GetDevicePixelRatio(),5*GetDevicePixelRatio()],
+            }
+        },
+        
+    };
+
+    for(var i=0;i<kData.Data.length;++i)   
+    {
+        var kItem=kData.Data[i];
+
+        //一列数据
+        var colItem={ Date:kItem.Date, Time:kItem.Time, Data:[ ] };
+
+        if (kItem.Time==1030 || kItem.Time==1035)
+        {
+            colItem.Data[0]= 
+            {
+                Text:"多", Color:"rgb(250,250,250)", BGColor:'rgb(250,0,0)', TextAlign:"center",
+                Tooltip:
+                {
+                    AryText:
+                    [
+                        {Title:"日期", Text:`${kItem.Date} ${kItem.Time}`},
+                        {Title:"买入价", Text:`${kItem.Close.toFixed(2)}`, TextColor:"rgb(250,0,0)"},
+                        {Title:"数量", Text:`${HQData.GetRandomTestData(100,400).toFixed(0)}`,TextColor:"rgb(255,165,0)" },
+                    ]
+                }
+            };
+        }
+        else if (kItem.Time==1033 || kItem.Time==1025)
+        {
+            colItem.Data[0]= 
+            {
+                Text:"空", Color:"rgb(250,250,250)", BGColor:'rgb(0,128,0)', TextAlign:"center",
+                Tooltip:
+                {
+                    AryText:
+                    [
+                        {Title:"日期", Text:`${kItem.Date} ${kItem.Time}`},
+                        {Title:"买入价", Text:`${kItem.Close.toFixed(2)}`, TextColor:"rgb(250,0,0)"},
+                        {Title:"数量", Text:`${HQData.GetRandomTestData(100,400).toFixed(0)}`,TextColor:"rgb(255,165,0)" },
+                    ]
+                }
+            };
+        }
+        else if (kItem.Time==1028 || kItem.Time==1032 || kItem.Time==1034 )
+        {
+            colItem.Data[1]= 
+            {
+                Text:"平", Color:"rgb(250,250,250)", BGColor:'rgb(255,165,0)', TextAlign:"center",
+                Tooltip:
+                {
+                    AryText:
+                    [
+                        {Title:"日期", Text:`${kItem.Date} ${kItem.Time}`},
+                        {Title:"卖入价", Text:`${kItem.Close.toFixed(2)}`, TextColor:"rgb(34,139,34)"},
+                        {Title:"数量", Text:`${HQData.GetRandomTestData(100,400).toFixed(0)}`,TextColor:"rgb(255,165,0)" },
+                    ]
+                }
+            };
+        }
+        else 
+        {
+            continue;
+        }
+        
+
+        tableData.Draw.DrawData.push(colItem);
+    }
+
+    var apiData=
+    {
+        code:0, 
+        stock:{ name:hqchart.Name, symbol:hqchart.Symbol }, 
+        outdata: { date:kData.GetDate(), time:kData.GetTime(), outvar:[tableData] } 
+    };
+
+    console.log('[KLineChart::APIIndex_KLINE_TABLE2] apiData ', apiData);
     callback(apiData);
 }
 
@@ -59666,6 +60065,108 @@ HQData.API_CHART_AREA_TEXT=function(data, callback)
 
     console.log('[HQData.API_CHART_AREA_TEXT] apiData ', apiData);
     callback(apiData);
+}
+
+
+HQData.APIIndex_DRAWTEXT_FIX=function(data, callback)
+{
+    data.PreventDefault=true;
+    var hqchart=data.HQChart;
+    var kData=hqchart.GetKData();
+
+    var textData= 
+    { 
+        name:'DRAWTEXT_FIX', type:1, 
+        Draw: 
+        { 
+            DrawType:'DRAWTEXT_FIX', 
+            DrawData: { Value:[], Text:[] },
+            Position:{ X:0.5, Y:0.2, Type:1 }
+        },
+        Color:"rgb(30,144,255)",
+        Font:`italic bold 2.2em "Fira Sans", sans-serif`,
+    };
+
+    for(var i=0;i<kData.Data.length;++i)
+    {
+        var kItem=kData.Data[i];
+
+        if (i%50==1)
+        {
+            textData.Draw.DrawData.Value[i]=1;
+            //textData.Draw.DrawData.Text[i]=`${kItem.Date}-${i}`;
+            textData.Draw.DrawData.Text[i]=[{ Name:`${kItem.Date}-${i}`}, { Name:`第2行${i}`}];
+        }
+        else
+        {
+            textData.Draw.DrawData.Value[i]=0;
+        }
+    }
+
+    var apiData=
+    {
+        code:0, 
+        stock:{ name:hqchart.Name, symbol:hqchart.Symbol }, 
+        outdata: { date:kData.GetDate(), time:kData.GetTime(), outvar:[textData] } 
+    };
+
+    console.log('[HQData.APIIndex_PARTLINE] apiData ', apiData);
+    callback(apiData);
+}
+
+HQData.APIIndex_DRAWNUMBER_FIX=function(data, callback)
+{
+    data.PreventDefault=true;
+    var hqchart=data.HQChart;
+    var kData=hqchart.GetKData();
+
+    var textData= 
+    { 
+        name:'DRAWNUMBER_FIX', type:1, 
+        Draw: 
+        { 
+            DrawType:'DRAWNUMBER_FIX', 
+            DrawData: { Value:[], Text:[] },
+            Position:{ X:0.5, Y:0.2, Type:1 }
+        },
+        Color:"rgb(30,144,255)",
+        Font:`italic bold 2.2em "Fira Sans", sans-serif`,
+    };
+
+    for(var i=0;i<kData.Data.length;++i)
+    {
+        var kItem=kData.Data[i];
+
+        if (i%50==1)
+        {
+            textData.Draw.DrawData.Value[i]=1;
+            textData.Draw.DrawData.Text[i]=`${i.toFixed(2)}`
+            //textData.Draw.DrawData.Text[i]=[{ Name:`${kItem.Date}-${i}`}, { Name:`第2行${i}`}];
+        }
+        else
+        {
+            textData.Draw.DrawData.Value[i]=0;
+        }
+    }
+
+    var apiData=
+    {
+        code:0, 
+        stock:{ name:hqchart.Name, symbol:hqchart.Symbol }, 
+        outdata: { date:kData.GetDate(), time:kData.GetTime(), outvar:[textData] } 
+    };
+
+    console.log('[HQData.APIIndex_PARTLINE] apiData ', apiData);
+    callback(apiData);
+}
+
+
+HQData.APIIndex_ErrorMessage=function(data, callback)
+{
+    data.PreventDefault=true;
+    var hqchartData={ outdata:{ date:null, time:null, outvar:[] } , code:0};
+    hqchartData.error={ message:"错误提示信息" };
+    callback(hqchartData);
 }
 
 

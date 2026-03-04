@@ -125,10 +125,12 @@ function JSPopMenu()
         if (item.Disable===true) trDom.classList.add('UMyChart_DrawTool_Disable_Tr');
         
         var prtTdDom=null;
-        for(var i=0;i<this.AryTDClassName.length;++i)
+        var aryTDClassName=this.AryTDClassName;
+        if (IFrameSplitOperator.IsNonEmptyArray(item.AryTDClassName)) aryTDClassName=item.AryTDClassName;
+        for(var i=0;i<aryTDClassName.length;++i)
         {
             var tdDom=document.createElement("td");
-            tdDom.className=this.AryTDClassName[i];
+            tdDom.className=aryTDClassName[i];
 
             if (i==0)   //图标
             {
@@ -262,10 +264,11 @@ function JSPopMenu()
         if (this.HQChart) this.HQChart.ClearRestoreFocusTimer();
 
         //菜单在当前屏幕无法显示需要调整
+        var scrollPos=GetScrollPosition();
         var menuHeight=this.RootDOM.offsetHeight;
         var yMenuBottom=y+menuHeight;
-        var yBottom=window.innerHeight-15;
-        if (yMenuBottom>yBottom) y=yBottom-menuHeight;
+        var yBottom=window.innerHeight-15+scrollPos.Top;
+        if (yMenuBottom>yBottom) y=(yBottom-menuHeight)
 
         var menuWidth=this.RootDOM.offsetWidth;
         var yMenuRight=x+menuWidth;
@@ -342,10 +345,11 @@ function JSPopMenu()
             else
             {
                 var rtParent=trDom.getBoundingClientRect();
-                var x=rtParent.right, y=rtParent.top;
+                var scrollPos=GetScrollPosition();
+                var x=rtParent.right, y=rtParent.top+scrollPos.Top;
 
                 //菜单在当前屏幕无法显示需要调整
-                var yBottom=window.innerHeight-15;
+                var yBottom=window.innerHeight-15+scrollPos.Top;
                 var yRight=window.innerWidth-15;
                 var menuHeight=subMenu.offsetHeight;
                 var menuWidth=subMenu.offsetWidth;

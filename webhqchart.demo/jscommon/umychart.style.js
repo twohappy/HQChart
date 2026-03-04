@@ -401,6 +401,12 @@ function GetBlackStyle()
                 Color:"rgb(156,156,156)"
             },
 
+            IndexHelp:
+            {
+                MoveOnColor:"rgb(255,255,255)",
+                Color:"rgb(156,156,156)"
+            },
+
             Tooltip:
             {
                 //Font:12*GetDevicePixelRatio() +"px 微软雅黑",
@@ -411,7 +417,7 @@ function GetBlackStyle()
                 //Mergin:{ Left:4, Right:4, Top:2, Bottom:4 },
             }
         },
-        
+
         DrawPicture:  //画图工具
         {
             LineColor: 
@@ -483,6 +489,15 @@ function GetBlackStyle()
             ValueColor:"rgb(210,210,210)",            //数值
         },
 
+        SmallFloatTooltipV2:
+        {
+            BGColor:'rgb(20,20,20)',            //背景色
+            BorderColor:'rgb(170,170,170)',     //边框颜色
+
+            TextColor:"rgb(210,210,210)",             //数值名称
+            ValueColor:"rgb(210,210,210)",            //数值
+        },
+
         DialogSelectRect:
         {
             BGColor:'rgb(20,20,20)',            //背景色
@@ -494,17 +509,6 @@ function GetBlackStyle()
             ValueColor:"rgb(210,210,210)",            //数值
             TurnoverRateColor:'rgb(43,54,69)',       //换手率
             PositionColor:"rgb(255,0,255)"            //持仓
-        },
-
-        DialogSearchIndex:
-        {
-            BGColor:'rgb(20,20,20)',            //背景色
-            BorderColor:'rgb(170,170,170)',     //边框颜色
-            TitleColor:'rgb(230,230,230)',       //标题颜色
-
-            IndexNameColor:"rgb(210,210,210)",       
-            GroupNameColor:"rgb(210,210,210)",      
-            InputTextColor:"rgb(210,210,210)", 
         },
 
         DialogPopKeyboard:
@@ -691,6 +695,13 @@ function GetBlackStyle()
             BGColor:[null, "rgb(42,46,57)"],
             SplitLine:{ Color:'rgb(73,133,231)', Width:1*GetDevicePixelRatio(), Dash:[5*GetDevicePixelRatio(),5*GetDevicePixelRatio()] }
         },
+
+        KLineCountDownPaint:
+        {
+            Unchange:{ BGColor:"rgb(190, 190 ,190)", PriceColor:"rgb(0,0,0)", TimeColor:"rgb(50,50,50)" },
+            Up:{ BGColor:"rgb(238,21,21)", PriceColor:"rgb(250,250,250)", TimeColor:"rgb(190,190,190)" },
+            Down:{ BGColor:"rgb(25,158,0)", PriceColor:"rgb(250,250,250)", TimeColor:"rgb(190,190,190)" },
+        },
     
         //成交明细
         DealList:
@@ -700,13 +711,13 @@ function GetBlackStyle()
             {
                 Color:"RGB(245,245,245)",
                 Mergin:{ Left:5, Right:5, Top:4, Bottom:2 },
-                Font:{ Size:12, Name:"微软雅黑" }
+                //Font:{ Size:12, Name:"微软雅黑" }
             },
     
             Row:
             {
                 Mergin:{ Top:2, Bottom:2 },
-                Font:{ Size:15, Name:"微软雅黑"},
+                //Font:{ Size:15, Name:"微软雅黑"},
                 BarMergin:{ Top:2, Left:3, Right:3, Bottom:2 }
             },
     
@@ -906,7 +917,8 @@ function GetBlackStyle()
             {
                 TextColor:"rgb(16,226,217)",
                 BaseTextColor:"rgb(60,60,83)",
-                BGColor:"rgb(65,65,65)"
+                BGColor:"rgb(65,65,65)",
+                MatchTextColor:"rgb(210,210,210)"
             },
 
             FieldColor:
@@ -993,6 +1005,117 @@ function GetBlackStyle()
                 BGColor: {  Selected:"rgb(234,85,4)", Default:"rgb(25,25,25)", MoveOn:"rgb(59,59,59)" },
                 BorderColor:"rgb(60,60,60)",
             }
+        },
+
+        StockInfo:
+        {
+            Header:
+            {
+                Name:
+                {
+                    //Font:`${20*GetDevicePixelRatio()}px 微软雅黑`,
+                    Color:"rgb(255,255,0)",
+                    //Margin:{ Left:5, Top:10, Bottom:5, Right:10, YOffset:0 },
+                },
+
+                Symbol:
+                {
+                    //Font:`${18*GetDevicePixelRatio()}px 微软雅黑`,
+                    Color:"rgb(250,250,250)",
+                    //Margin:{ Left:5, Top:10, Bottom:5, Right:5, YOffset:0 },
+                },
+
+                AryCell:
+                [
+                    //{ Font:`bold ${16*GetDevicePixelRatio()}px 微软雅黑`, Margin:{ Left:5, Top:5, Bottom:5, Right:15, YOffset:0 } },
+                    //{ Font:`${16*GetDevicePixelRatio()}px 微软雅黑`, Margin:{ Left:5, Top:5, Bottom:5, Right:15, YOffset:0 } },
+                    //{ Font:`${16*GetDevicePixelRatio()}px 微软雅黑`, Margin:{ Left:5, Top:5, Bottom:5, Right:5, YOffset:0 } }
+                ],
+
+                TextColor:"rgb(250,250,250)",
+
+                BottomLine:{ Enable:true, Color:"rgb(60,60,60)"} ,    //底部分割线
+            },
+
+            BuySell:
+            {
+                //Font:14*GetDevicePixelRatio() +'px 微软雅黑',
+                TitleColor:"rgb(250,250,250)",
+                VolColor:"rgb(250,250,250)",
+                //Margin:{ Left:0, Top:0, Bottom:0, Right:0 },
+                //CellMargin:{ Top:5, Bottom:5, YOffset:0, Left:5, Right:5, YOffset:-5 },
+                BottomLine:{ Enable:true, Color:"rgb(60,60,60)"} ,    //底部分割线
+                TopLine:{ Enable:false, Color:"rgb(60,60,60)"} ,      //顶部分割线
+
+                CenterLine:
+                {
+                    NoneColor:"rgb(60,60,60)",
+                }
+            },
+
+            Table:
+            {
+                Font:14*GetDevicePixelRatio() +'px 微软雅黑',
+                TitleColor:"rgb(250,250,250)",
+                TextColor:"rgb(250,250,250)",
+                //Margin:{ Left:0, Top:0, Bottom:0, Right:0 },
+                //CellMargin:{ Top:5, Bottom:5, YOffset:0, Left:5, Right:5, YOffset:-5 },
+            },
+
+            MouseOn:{ BGColor:"rgb(54,54,54)" },
+
+            UpTextColor:"rgb(238,21,21)",      //上涨文字颜色
+            DownTextColor:"rgb(25,158,0)",     //下跌文字颜色
+            UnchangeTextColor:"rgb(90,90,90)",     //平盘文字颜色 
+            BorderColor:'rgb(38,38,41)',        //边框线
+        },
+
+
+        StatusBar:
+        {
+            Table:
+            {
+                //Font:14*GetDevicePixelRatio() +'px 微软雅黑',
+                TitleColor:"rgb(250,250,250)",
+                AryTextColor:["rgb(250,250,250)", "rgb(255, 185, 15)"],
+                //Margin:{ Left:0, Top:0, Bottom:0, Right:0 },
+                //CellMargin:{ Top:5, Bottom:5, Left:5, Right:5, YOffset:0 },
+                //ItemSpace:20,
+
+                Separator: 
+                { 
+                    //Left:20, 
+                   // Right:20, 
+                    Line:
+                    { 
+                        //Width:1, 
+                        Color:"rgb(38,38,41)", 
+                        //Top:2, 
+                        //Bottom:2 
+                    } 
+                }
+            },
+
+            DateTime:
+            {
+                //Font:14*GetDevicePixelRatio() +'px 微软雅黑',
+                TitleColor:"rgb(250,250,250)",
+                //Format:"HH:MM:SS",
+                //MaxText:"99:99:99",
+                //Margin:{ Left:2*GetDevicePixelRatio(), Top:5*GetDevicePixelRatio(), Bottom:5*GetDevicePixelRatio(), Right:5*GetDevicePixelRatio(), YOffset:1*GetDevicePixelRatio() },
+            },
+
+            UpTextColor:"rgb(238,21,21)",      //上涨文字颜色
+            DownTextColor:"rgb(25,158,0)",     //下跌文字颜色
+            UnchangeTextColor:"rgb(90,90,90)",     //平盘文字颜色 
+
+            BorderColor:'rgb(38,38,41)',        //边框线
+        },
+
+        ScrollText:
+        {
+            Color:"rgb(30,144,255)",
+            MouseOnColor:"rgb(255,255,0)",
         }
         
     };

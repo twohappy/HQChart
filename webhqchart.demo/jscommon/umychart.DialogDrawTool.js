@@ -29,6 +29,8 @@ var JS_DRAWTOOL_MENU_ID=
     CMD_ZOOM_OUT_FONT_ID:12, //字体缩小
     CMD_MODIFY_TEXT_ID:13,  //随机生成文字内容
     CMD_ADVANCED_SETTING_ID:14, //高级设置
+
+    CMD_CROSS_PERIOD_ID:15, //跨周期
 };
 
 function JSDialogDrawTool()
@@ -151,6 +153,7 @@ function JSDialogDrawTool()
         AryTool:
         [
             { Title:"选中", ClassName:'hqchart_drawtool icon-arrow', Type:1, Data:{ID:JS_DRAWTOOL_MENU_ID.CMD_SELECTED_ID} },
+            { Title:"跨周期", ClassName: 'hqchart_drawtool icon-kuazhouqi', Type:2, Data:{ ID:JS_DRAWTOOL_MENU_ID.CMD_CROSS_PERIOD_ID }},
             { Title:'尺子', ClassName: 'hqchart_drawtool icon-ruler', Type:0, Data:{ ID:"尺子" } },
             { Title:"磁铁", ClassName:'hqchart_drawtool icon-xifu', Type:2, Data:{ID:JS_DRAWTOOL_MENU_ID.CMD_ENABLE_MAGNET_ID} },
             { Title:"点击切换颜色", ClassName: 'hqchart_drawtool icon-fangkuai', Type:2, Data:{ ID:JS_DRAWTOOL_MENU_ID.CMD_CHANGE_LINE_COLOR_ID }},
@@ -164,8 +167,6 @@ function JSDialogDrawTool()
     this.AryDivChart=[];
     this.HQChart=null;
     this.LineColor='rgb(255,140,0)';
-    this.LineColorIndex=0;
-    this.RandomLineColor=["rgb(255,69,0)", "rgb(0,191,255)", "rgb(255,0,255)", "rgb(255,105,180)"];
     this.LineWidth=1*GetDevicePixelRatio();
     this.ColumnCount=5
 
@@ -176,7 +177,6 @@ function JSDialogDrawTool()
     this.Inital=function(hqchart)
     {
        this.LineColor=g_JSChartResource.DrawPicture.LineColor[0];
-       this.RandomLineColor.splice(0,0,this.LineColor);
        this.HQChart=hqchart;
     }
 
@@ -310,12 +310,15 @@ function JSDialogDrawTool()
             this.ClearCurrnetDrawPicture();
             this.EnableEraseChart(false);
         }
+        else if (type==2 && id==JS_DRAWTOOL_MENU_ID.CMD_CROSS_PERIOD_ID)
+        {
+            this.EnableCrossPeriod(data);
+        }
         else if (type==2 && id==JS_DRAWTOOL_MENU_ID.CMD_ENABLE_MAGNET_ID)
         {
             this.ChangeMagnet(data);
         }
         else if (type==0)
-    
         {
             this.ClearAllSelectedChart();
             this.EnableEraseChart(false);
@@ -335,6 +338,26 @@ function JSDialogDrawTool()
 
             item.Span.classList.remove("UMyChart_DrawTool_Span_Selected");
             item.Span.classList.add("UMyChart_DrawTool_Span");
+        }
+    }
+
+    this.EnableCrossPeriod=function(data)
+    {
+        if (!this.HQChart) return;
+        if (!this.HQChart.ChartDrawStorage) return;
+
+        this.HQChart.ChartDrawStorage.EnableCrossPeriod=!this.HQChart.ChartDrawStorage.EnableCrossPeriod;
+        var enable=this.HQChart.ChartDrawStorage.EnableCrossPeriod;
+
+        if (enable) 
+        {
+            data.Span.classList.remove("UMyChart_DrawTool_Span");
+            data.Span.classList.add("UMyChart_DrawTool_Span_Selected");
+        }
+        else 
+        {
+            data.Span.classList.remove("UMyChart_DrawTool_Span_Selected");
+            data.Span.classList.add("UMyChart_DrawTool_Span");
         }
     }
 
@@ -382,6 +405,21 @@ function JSDialogDrawTool()
         if (item.Type==2 && item.Data.ID==JS_DRAWTOOL_MENU_ID.CMD_CHANGE_LINE_COLOR_ID)   //颜色
         {
             spanDom.style['color']=this.LineColor;
+            var inputColor=document.createElement("input");
+            inputColor.setAttribute("type", "color");
+            inputColor.setAttribute("value", IChartDrawPicture.RGBToHex(this.LineColor));
+            inputColor.className="UMyChart_DrawTool_Input_Color";
+            inputColor.oninput=(e)=>{ this.OnChangeColor(e, data) };
+            tdDom.appendChild(inputColor);
+            data.InputColor=inputColor;
+        }
+        else if (item.Type==2 && item.Data.ID==JS_DRAWTOOL_MENU_ID.CMD_CROSS_PERIOD_ID)
+        {
+            if (this.HQChart && this.HQChart.ChartDrawStorage && this.HQChart.ChartDrawStorage.EnableCrossPeriod)
+            {
+                data.Span.classList.remove("UMyChart_DrawTool_Span");
+                data.Span.classList.add("UMyChart_DrawTool_Span_Selected");
+            }
         }
         
         tdDom.onmousedown=(e)=> { this.OnClickItem(e, data); };   //点击
@@ -390,14 +428,18 @@ function JSDialogDrawTool()
     }
 
 
-    
+    this.OnChangeColor=function(e, data)
+    {
+        var color=data.InputColor.value;
+        color=IChartDrawPicture.HexToRGB(color);
+        this.LineColor=color;
+        data.Span.style['color']=this.LineColor;
+    }
+
     this.OnChangeLineColor=function(data)
     {
-        ++this.LineColorIndex;
-        var index=this.LineColorIndex%this.RandomLineColor.length;
-        this.LineColor=this.RandomLineColor[index];
-
-        data.Span.style['color']=this.LineColor;
+        data.InputColor.setAttribute("value", IChartDrawPicture.RGBToHex(this.LineColor));
+        data.InputColor.click();    //显示选色器
     }
 
     //清空所有画图工具
@@ -514,6 +556,7 @@ function JSDialogDrawTool()
     this.Close=function(e)
     {
         if (!this.DivDialog) return;
+        if (!this.IsShow()) return;
 
         this.DivDialog.style.visibility='hidden';
 
@@ -643,24 +686,19 @@ function JSDialogModifyDraw()
     this.ModifyTextButton=null;
     this.AdvancedButton=null;
 
-    this.RandomLineColor=["rgb(255,69,0)", "rgb(173,255,47)", "rgb(238,154,73)", "rgb(255,105,180)"];               //线段颜色
-    this.RandomBGColor=["rgba(210,251,209，0.8)", "rgb(217,217,253)", "rgb(255,208,204)", "rgb(252,249,206)"];      //背景颜色
-    this.RandomFontColor=["rgb(0,0,0)", "rgb(255, 0, 0)", "rgb(20, 255, 0)", "rgb(255, 0, 255)"];                   //文字颜色
-    this.RandomBorderColor=["rgb(0,0,0)", "rgb(5, 246, 143)", "rgb(139, 137, 137)", "rgb(255, 20, 147)"];           //边框颜色
-
     this.AryButton=
     [
-        { Title:"修改线段颜色", ClassName: 'hqchart_drawtool icon-huabi', Type:2, Data:{ ID:JS_DRAWTOOL_MENU_ID.CMD_CHANGE_LINE_COLOR_ID }},
-        { Title:"修改字体颜色", ClassName: 'hqchart_drawtool icon-zitiyanse', Type:2, Data:{ ID:JS_DRAWTOOL_MENU_ID.CMD_CHANGE_FONT_COLOR_ID }},
-        { Title:"修改背景颜色", ClassName: 'hqchart_drawtool icon-zitibeijingse', Type:2, Data:{ ID:JS_DRAWTOOL_MENU_ID.CMD_CHANGE_BG_COLOR_ID }},
-        { Title:"修改边框颜色", ClassName: 'hqchart_drawtool icon-biankuang', Type:2, Data:{ ID:JS_DRAWTOOL_MENU_ID.CMD_CHANGE_BORDER_COLOR_ID }},
-        { Title:"字体放大", ClassName: 'hqchart_drawtool icon-zoomin', Type:2, Data:{ ID:JS_DRAWTOOL_MENU_ID.CMD_ZOOM_FONT_ID }},
-        { Title:"字体缩小", ClassName: 'hqchart_drawtool icon-zoomout', Type:2, Data:{ ID:JS_DRAWTOOL_MENU_ID.CMD_ZOOM_OUT_FONT_ID }},
-        { Title:"随机生成文字内容", ClassName: 'hqchart_drawtool icon-bianji', Type:2, Data:{ ID:JS_DRAWTOOL_MENU_ID.CMD_MODIFY_TEXT_ID }},
-        { Title:"高级设置", ClassName: 'hqchart_drawtool icon-setting', Type:2, Data:{ ID:JS_DRAWTOOL_MENU_ID.CMD_ADVANCED_SETTING_ID }},
+        { Title:"修改图形颜色", ClassName: 'hqchart_drawtool icon-Vector UMyChart_Draw_Modify_Dialog_Button_Color_Span', Type:2, Data:{ ID:JS_DRAWTOOL_MENU_ID.CMD_CHANGE_LINE_COLOR_ID }},
+        { Title:"修改字体颜色", ClassName: 'hqchart_drawtool icon-zitiyanse1 UMyChart_Draw_Modify_Dialog_Button_Color_Span ', Type:2, Data:{ ID:JS_DRAWTOOL_MENU_ID.CMD_CHANGE_FONT_COLOR_ID }},
+        { Title:"修改背景颜色", ClassName: 'hqchart_drawtool icon-zitibeijingse UMyChart_Draw_Modify_Dialog_Button_Color_Span', Type:2, Data:{ ID:JS_DRAWTOOL_MENU_ID.CMD_CHANGE_BG_COLOR_ID }},
+        { Title:"修改边框颜色", ClassName: 'hqchart_drawtool icon-biankuang UMyChart_Draw_Modify_Dialog_Button_Color_Span', Type:2, Data:{ ID:JS_DRAWTOOL_MENU_ID.CMD_CHANGE_BORDER_COLOR_ID }},
+        { Title:"字体放大", ClassName: 'hqchart_drawtool icon-zoomin UMyChart_Draw_Modify_Dialog_Button_Span', Type:2, Data:{ ID:JS_DRAWTOOL_MENU_ID.CMD_ZOOM_FONT_ID }},
+        { Title:"字体缩小", ClassName: 'hqchart_drawtool icon-zoomout UMyChart_Draw_Modify_Dialog_Button_Span', Type:2, Data:{ ID:JS_DRAWTOOL_MENU_ID.CMD_ZOOM_OUT_FONT_ID }},
+        { Title:"随机生成文字内容", ClassName: 'hqchart_drawtool icon-bianji UMyChart_Draw_Modify_Dialog_Button_Span', Type:2, Data:{ ID:JS_DRAWTOOL_MENU_ID.CMD_MODIFY_TEXT_ID }},
+        { Title:"高级设置", ClassName: 'hqchart_drawtool icon-setting UMyChart_Draw_Modify_Dialog_Button_Span', Type:2, Data:{ ID:JS_DRAWTOOL_MENU_ID.CMD_ADVANCED_SETTING_ID }},
 
         { Title:"上锁", ClassName: 'hqchart_drawtool icon-lock', Type:2, Data:{ ID:JS_DRAWTOOL_MENU_ID.CMD_LOCK_DRAW_CHART_ID }},
-        { Title:"删除图形", ClassName: 'hqchart_drawtool icon-recycle_bin', Type:2, Data:{ ID:JS_DRAWTOOL_MENU_ID.CMD_DELETE_DRAW_CHART_ID }},
+        { Title:"删除图形", ClassName: 'hqchart_drawtool icon-recycle_bin UMyChart_Draw_Modify_Dialog_Button_Span', Type:2, Data:{ ID:JS_DRAWTOOL_MENU_ID.CMD_DELETE_DRAW_CHART_ID }},
     ];
 
     this.RestoreFocusDelay=800;
@@ -693,7 +731,7 @@ function JSDialogModifyDraw()
 
         var spanDom=document.createElement("span");
         spanDom.className="hqchart_drawtool icon-tuodong";
-        spanDom.classList.add("UMyChart_DrawTool_Span");
+        spanDom.classList.add("UMyChart_Draw_Modify_Dialog_Drag_Span");
         drgDiv.appendChild(spanDom);
 
         for(var i=0;i<this.AryButton.length;++i)
@@ -716,10 +754,9 @@ function JSDialogModifyDraw()
         spanTooltip.innerText=item.Title;
         divItem.appendChild(spanTooltip);
 
-
         var spanDom=document.createElement("span");
         spanDom.className=item.ClassName;
-        spanDom.classList.add("UMyChart_DrawTool_Span");
+        //spanDom.classList.add("UMyChart_Draw_Modify_Dialog_Button_Span");
         divItem.appendChild(spanDom);
        
 
@@ -733,22 +770,37 @@ function JSDialogModifyDraw()
         {
             case JS_DRAWTOOL_MENU_ID.CMD_CHANGE_LINE_COLOR_ID:
                 this.ColorButton=data;
+                var divColorBar=this.CreateColorBar(data);
+                divItem.appendChild(divColorBar);
+                var inputColor=this.CreateInputColor(data);
+                divItem.appendChild(inputColor);
                 break;
             case JS_DRAWTOOL_MENU_ID.CMD_CHANGE_BG_COLOR_ID:
                 this.BGColorButton=data;
+                var divColorBar=this.CreateColorBar(data);
+                divItem.appendChild(divColorBar);
+                var inputColor=this.CreateInputColor(data);
+                divItem.appendChild(inputColor);
                 divItem.style.display="none";
                 break;
             case JS_DRAWTOOL_MENU_ID.CMD_CHANGE_FONT_COLOR_ID:
                 this.FontColorButton=data;
+                var divColorBar=this.CreateColorBar(data);
+                divItem.appendChild(divColorBar);
+                var inputColor=this.CreateInputColor(data);
+                divItem.appendChild(inputColor);
                 divItem.style.display="none";
                 break;
             case JS_DRAWTOOL_MENU_ID.CMD_CHANGE_BORDER_COLOR_ID:
                 this.BorderColorButton=data;
+                var divColorBar=this.CreateColorBar(data);
+                divItem.appendChild(divColorBar);
+                var inputColor=this.CreateInputColor(data);
+                divItem.appendChild(inputColor);
                 divItem.style.display="none";
                 break;
             case JS_DRAWTOOL_MENU_ID.CMD_LOCK_DRAW_CHART_ID:
                 this.LockButton=data;
-                this.LockButton.Span.style['color']="rgb(220,220,220)";
                 break;
             case JS_DRAWTOOL_MENU_ID.CMD_ZOOM_FONT_ID:
                 this.FontZoomButton=data;
@@ -771,6 +823,27 @@ function JSDialogModifyDraw()
         parentDivDom.appendChild(divItem);
     }
 
+    this.CreateInputColor=function(data)
+    {
+        var inputColor=document.createElement("input");
+        inputColor.setAttribute("type", "color");
+        inputColor.className="UMyChart_Draw_Modify_Input_Color";
+        data.InputColor=inputColor;
+        inputColor.oninput=(e)=>{ this.OnChangeColor(e, data) };
+       
+        return inputColor;
+    }
+
+    //颜色块
+    this.CreateColorBar=function(data)
+    {
+        var divColor=document.createElement("div");
+        divColor.className="UMyChart_Draw_Modify_Dialog_Button_ColorBar_Div";
+        data.DivColorBar=divColor;
+
+        return divColor;
+    }
+
     this.OnClickButton=function(e, data)
     {
         console.log('[JSDialogModifyDraw::OnClickButton] ', data);
@@ -780,19 +853,19 @@ function JSDialogModifyDraw()
         switch(id)
         {
             case JS_DRAWTOOL_MENU_ID.CMD_CHANGE_LINE_COLOR_ID:
-                this.ModifyLineColor();
+                this.ModifyLineColor(data);
                 break;
             case JS_DRAWTOOL_MENU_ID.CMD_DELETE_DRAW_CHART_ID:
                 this.DeleteDrawPicture();
                 break;
             case JS_DRAWTOOL_MENU_ID.CMD_CHANGE_BG_COLOR_ID:
-                this.ModifyBGColor();
+                this.ModifyBGColor(data);
                 break;
             case JS_DRAWTOOL_MENU_ID.CMD_CHANGE_FONT_COLOR_ID:
-                this.ModifyFontColor();
+                this.ModifyFontColor(data);
                 break;
             case JS_DRAWTOOL_MENU_ID.CMD_CHANGE_BORDER_COLOR_ID:
-                this.ModifyBorderColor();
+                this.ModifyBorderColor(data);
                 break;
             case JS_DRAWTOOL_MENU_ID.CMD_LOCK_DRAW_CHART_ID:
                 this.ModifyLockChart();
@@ -829,6 +902,8 @@ function JSDialogModifyDraw()
         if (!this.DivDialog) return;
 
         this.ChartPicture=null;
+        if (!this.IsShow()) return;
+
         this.DivDialog.style.visibility='hidden';
 
         if (this.HQChart) this.HQChart.RestoreFocus(this.RestoreFocusDelay);
@@ -869,83 +944,89 @@ function JSDialogModifyDraw()
         dom.style.display=diaplay;
     }
 
-    this.GetRandomColor=function(currentColor, randomLineColor)
+    this.OnChangeColor=function(e, data)
     {
-        var colorIndex=0;
-        for(var i=0;i<randomLineColor.length;++i)
+        if (!this.ChartPicture || !this.HQChart) return;
+
+        var color=data.InputColor.value;
+        color=IChartDrawPicture.HexToRGB(color);
+
+        if (data.Item.Data.ID==JS_DRAWTOOL_MENU_ID.CMD_CHANGE_LINE_COLOR_ID)
         {
-            if (currentColor==randomLineColor[i]) 
-            {
-                colorIndex=i+1;
-                break;
-            }
+            this.ChartPicture.LineColor=color;
+            if (this.ColorButton) this.ColorButton.DivColorBar.style['background-color']=color;
+            if (this.HQChart.ChartDrawStorage) this.HQChart.ChartDrawStorage.SaveDrawData(this.ChartPicture);   //保存下
+
+            this.HQChart.Draw();
         }
-
-        colorIndex=colorIndex%randomLineColor.length;
-        var color=randomLineColor[colorIndex];
-
-        return color;
-    }
-
-    this.ModifyLineColor=function()
-    {
-        if (!this.ChartPicture || !this.HQChart) return;
-
-        var color=this.GetRandomColor(this.ChartPicture.LineColor, this.RandomLineColor);
-
-        this.ChartPicture.LineColor = color;
-        this.ChartPicture.PointColor = color;
-
-        if (this.ColorButton) this.ColorButton.Span.style['color']=color;
-
-        if (this.HQChart.ChartDrawStorage) this.HQChart.ChartDrawStorage.SaveDrawData(this.ChartPicture);   //保存下
-
-        this.HQChart.Draw();
-    }
-
-    this.ModifyFontColor=function()
-    {
-        if (!this.ChartPicture || !this.HQChart) return;
-
+        else if (data.Item.Data.ID==JS_DRAWTOOL_MENU_ID.CMD_CHANGE_BORDER_COLOR_ID)
+        {
+            if (this.ChartPicture.ClassName=="ChartDrawNote") this.ChartPicture.NoteBorderColor=color;
+            else this.ChartPicture.BorderColor=color;
         
-        if (this.ChartPicture.ClassName=="ChartDrawNote")
-        {
-            var color=this.GetRandomColor(this.ChartPicture.NoteTextColor, this.RandomFontColor);
-            this.ChartPicture.NoteTextColor=color;
+            if (this.BorderColorButton) this.BorderColorButton.DivColorBar.style['background-color']=color;
+            if (this.HQChart.ChartDrawStorage) this.HQChart.ChartDrawStorage.SaveDrawData(this.ChartPicture);   //保存下
+
+            this.HQChart.Draw();
         }
-        else
+        else if (data.Item.Data.ID==JS_DRAWTOOL_MENU_ID.CMD_CHANGE_FONT_COLOR_ID)
         {
-            var color=this.GetRandomColor(this.ChartPicture.TextColor, this.RandomFontColor);
-            this.ChartPicture.TextColor=color;
+            if (this.ChartPicture.ClassName=="ChartDrawNote") this.ChartPicture.NoteTextColor=color;
+            else this.ChartPicture.TextColor=color;
+
+            if (this.FontColorButton) this.FontColorButton.DivColorBar.style['background-color']=color;
+            if (this.HQChart.ChartDrawStorage) this.HQChart.ChartDrawStorage.SaveDrawData(this.ChartPicture);   //保存下
+
+            this.HQChart.Draw();
+        }
+        else if (data.Item.Data.ID==JS_DRAWTOOL_MENU_ID.CMD_CHANGE_BG_COLOR_ID)
+        {
+            color=IChartDrawPicture.ColorToRGBA(color, 0.8);
+            if (this.ChartPicture.ClassName=="ChartDrawNote") this.ChartPicture.NoteBGColor=color;
+            else this.ChartPicture.BGColor=color;
+
+            if (this.BGColorButton) this.BGColorButton.DivColorBar.style['background-color']=color;
+            if (this.HQChart.ChartDrawStorage) this.HQChart.ChartDrawStorage.SaveDrawData(this.ChartPicture);   //保存下
+
+            this.HQChart.Draw();
         }
        
-
-        if (this.FontColorButton) this.FontColorButton.Span.style['color']=color;
-
-        if (this.HQChart.ChartDrawStorage) this.HQChart.ChartDrawStorage.SaveDrawData(this.ChartPicture);   //保存下
-
-        this.HQChart.Draw();
     }
 
-    this.ModifyBGColor=function()
+    this.ShowColorPicker=function(data, defaultColor)
+    {
+        if (!data.InputColor) return;
+
+        data.InputColor.setAttribute("value", IChartDrawPicture.RGBToHex(defaultColor));
+        data.InputColor.click();    //显示选色器
+    }
+
+    this.ModifyLineColor=function(data)
     {
         if (!this.ChartPicture || !this.HQChart) return;
 
-        if (this.ChartPicture.ClassName=="ChartDrawNote")
-        {
-            var color=this.GetRandomColor(this.ChartPicture.NoteBGColor, this.RandomBGColor);
-            this.ChartPicture.NoteBGColor=color;
-        }
-        else
-        {
-            var color=this.GetRandomColor(this.ChartPicture.BGColor, this.RandomBGColor);
-            this.ChartPicture.BGColor=color;
-        }
-       
-        if (this.BGColorButton) this.BGColorButton.Span.style['color']=color;
-        if (this.HQChart.ChartDrawStorage) this.HQChart.ChartDrawStorage.SaveDrawData(this.ChartPicture);   //保存下
+        var color=this.ChartPicture.LineColor;
+        this.ShowColorPicker(data, color);
+    }
 
-        this.HQChart.Draw();
+    this.ModifyFontColor=function(data)
+    {
+        if (!this.ChartPicture || !this.HQChart) return;
+
+        var color=this.ChartPicture.TextColor;
+        if (this.ChartPicture.ClassName=="ChartDrawNote") color=this.ChartPicture.NoteTextColor;
+        
+        this.ShowColorPicker(data, color);
+    }
+
+    this.ModifyBGColor=function(data)
+    {
+        if (!this.ChartPicture || !this.HQChart) return;
+
+        var color=this.ChartPicture.BGColor;
+        if (this.ChartPicture.ClassName=="ChartDrawNote") color=this.ChartPicture.NoteBGColor;
+       
+        this.ShowColorPicker(data, color);
     }
 
     this.ModifyLockChart=function()
@@ -953,29 +1034,33 @@ function JSDialogModifyDraw()
         if (!this.ChartPicture || !this.HQChart) return;
         this.ChartPicture.EnableMove=!this.ChartPicture.EnableMove;
 
-        if (this.LockButton) this.LockButton.Span.style['color']=this.ChartPicture.EnableMove?"rgb(220,220,220)":"rgb(0,0,0)";
+        return this.UpdateLockButtonStyle();
     }
 
-    this.ModifyBorderColor=function()
+    this.UpdateLockButtonStyle=function()
     {
-        if (!this.ChartPicture || !this.HQChart) return;
+        if (!this.LockButton) return;
 
-        if (this.ChartPicture.ClassName=="ChartDrawNote")
+        if (this.ChartPicture.EnableMove)
         {
-            var color=this.GetRandomColor(this.ChartPicture.NoteBorderColor, this.RandomBorderColor);
-            this.ChartPicture.NoteBorderColor=color;
+            this.LockButton.Span.classList.remove("UMyChart_Draw_Modify_Dialog_Button_Span");
+            this.LockButton.Span.classList.add("UMyChart_Draw_Modify_Dialog_Unlock_Button_Span");
         }
         else
         {
-            var color=this.GetRandomColor(this.ChartPicture.BorderColor, this.RandomBorderColor);
-            this.ChartPicture.BorderColor=color;
+            this.LockButton.Span.classList.remove("UMyChart_Draw_Modify_Dialog_Unlock_Button_Span");
+            this.LockButton.Span.classList.add("UMyChart_Draw_Modify_Dialog_Button_Span");
         }
-        
-       
-        if (this.BorderColorButton) this.BorderColorButton.Span.style['color']=color;
-        if (this.HQChart.ChartDrawStorage) this.HQChart.ChartDrawStorage.SaveDrawData(this.ChartPicture);   //保存下
+    }
 
-        this.HQChart.Draw();
+    this.ModifyBorderColor=function(data)
+    {
+        if (!this.ChartPicture || !this.HQChart) return;
+
+        var color= this.ChartPicture.BorderColor;
+        if (this.ChartPicture.ClassName=="ChartDrawNote") color=this.ChartPicture.NoteBorderColor;
+       
+        this.ShowColorPicker(data, color);
     }
 
     this.ModifyFontZoom=function(step)
@@ -1016,6 +1101,11 @@ function JSDialogModifyDraw()
         }
 
         this.HQChart.Draw();
+    }
+
+    this.AdvancedSetting=function()
+    {
+        
     }
 
     this.GetRandomText=function(text)
@@ -1097,7 +1187,7 @@ function JSDialogModifyDraw()
             this.ShowButton(item.Div, bShowLineColor?"inline":"none");
             if (bShowLineColor)
             {
-                item.Span.style['color']=chart.LineColor;
+                item.DivColorBar.style['background-color']=chart.LineColor;
             }
         }
 
@@ -1107,7 +1197,7 @@ function JSDialogModifyDraw()
             this.ShowButton(item.Div, bShowBGColor?"inline":"none");
             if (bShowBGColor)
             {
-                item.Span.style['color']=bgColor;
+                item.DivColorBar.style['background-color']=bgColor;
             }
         }
 
@@ -1117,7 +1207,7 @@ function JSDialogModifyDraw()
             this.ShowButton(item.Div, bShowFontColor?"inline":"none");
             if (bShowFontColor)
             {
-                item.Span.style['color']=fontColor;
+                item.DivColorBar.style['background-color']=fontColor;
             }
         }
 
@@ -1127,14 +1217,13 @@ function JSDialogModifyDraw()
             this.ShowButton(item.Div, bShowBorderColor?"inline":"none");
             if (bShowBorderColor)
             {
-                item.Span.style['color']=borderColor;
+                item.DivColorBar.style['background-color']=borderColor;
             }
         }
 
         if (this.LockButton) 
         {
-            var item=this.LockButton;
-            item.Span.style['color']=this.ChartPicture.EnableMove?"rgb(220,220,220)":"rgb(0,0,0)";
+           this.UpdateLockButtonStyle();
         }
 
         if (this.FontZoomButton)

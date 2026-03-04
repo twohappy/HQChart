@@ -74,6 +74,7 @@ function JSChartResource()
         EnableIndexArrow:true,  //指标数值是否带上涨下跌箭头
 
         NameArrow:{ Color:"rgb(43,54,69)", Space:2, Symbol:'▼' },
+        IsSinlgeLine:false, //主图指标是否单行显示 false=多行显示
     }
 
     this.UpTextColor = "rgb(238,21,21)";
@@ -170,6 +171,15 @@ function JSChartResource()
         TextColor:"rgb(210, 34, 34)",
         Font:'14px 微软雅黑',
         Title:'🔒开通权限'
+    }
+
+    this.LatestPointFlash=
+    {
+        PointColor:"rgb(50,171,205)",
+        PointRadius:3,
+
+        BGColor:"rgba(50,171,205,0.7)",
+        BGRadius:6,
     }
 
     this.Domain = "http://127.0.0.1:8080";               //API域名
@@ -376,6 +386,9 @@ function JSChartResource()
         YOffset:0   //y坐标向上偏移
     }
 
+    this.DRAWTEXT_FIX={ Font:'14px 微软雅黑' }
+    this.DRAWNUMBER_FIX={ Font:'14px 微软雅黑' }
+
     this.CIRCLEDOT=
     {
         Radius:1.3
@@ -389,6 +402,12 @@ function JSChartResource()
     this.DOTLINE=
     {
         LineDash:[3,5]
+    }
+
+    this.ChartPointDot=
+    {
+        UpColor:"rgb(255,61,61)",
+        DownColor:"rgb(0,199,65)"
     }
 
     this.StockChip=
@@ -564,6 +583,7 @@ function JSChartResource()
 
             if (IFrameSplitOperator.IsNumber(item.ArrowType)) this.IndexTitle.ArrowType=item.ArrowType;
             if (IFrameSplitOperator.IsBool(item.EnableIndexArrow)) this.IndexTitle.EnableIndexArrow=item.EnableIndexArrow;
+            if (IFrameSplitOperator.IsBool(item.IsSinlgeLine)) this.IndexTitle.IsSinlgeLine=item.IsSinlgeLine;
             
             if (item.NameArrow)
             {
@@ -718,6 +738,18 @@ function JSChartResource()
         {
             var item=style.DRAWABOVE;
             if (this.IsNumber(item.YOffset)) this.DRAWABOVE.YOffset=item.YOffset;
+        }
+
+        if (style.DRAWTEXT_FIX)
+        {
+            var item=style.DRAWTEXT_FIX;
+            if (item.Font) this.DRAWTEXT_FIX.Font=item.Font;
+        }
+
+        if (style.DRAWNUMBER_FIX)
+        {
+            var item=style.DRAWNUMBER_FIX;
+            if (item.Font) this.DRAWNUMBER_FIX.Font=item.Font;
         }
 
         if (style.StockChip)
@@ -949,6 +981,25 @@ function JSChartResource()
 
         if (style.KLineTrain)  this.SetKLineTrain(style.KLineTrain);
         if (style.IndexLock) this.SetIndexLock(style.IndexLock);
+        if (style.LatestPointFlash) this.SetLatestPointFlash(style.LatestPointFlash);
+        if (style.ChartPointDot) this.SetChartPointDot(style.ChartPointDot);
+    }
+
+    this.SetChartPointDot=function(style)
+    {
+        var dest=this.ChartPointDot;
+        if (style.UpColor) dest.UpColor=style.UpColor;
+        if (style.DownColor) dest.DownColor=style.DownColor;
+    }
+    
+    this.SetLatestPointFlash=function(style)
+    {
+        var dest=this.LatestPointFlash;
+        if (style.PointColor) dest.PointColor=style.PointColor;
+        if (IFrameSplitOperator.IsNumber(style.PointRadius)) dest.PointRadius=style.PointRadius;
+
+        if (style.BGColor) dest.BGColor=style.BGColor;
+        if (IFrameSplitOperator.IsNumber(style.BGRadius)) dest.BGRadius=style.BGRadius;
     }
 
     this.SetKLineTrain=function(style)
@@ -1026,6 +1077,15 @@ JSChartResource.CopyMargin=function(dest,src)
     if (IFrameSplitOperator.IsNumber(src.Bottom)) dest.Bottom=src.Bottom;
 }
 
+JSChartResource.CopyMarginConfig=function(dest,src)
+{
+    if (!src || !dest) return;
+
+    if (IFrameSplitOperator.IsNumber(src.Left)) dest.Left=src.Left;
+    if (IFrameSplitOperator.IsNumber(src.Top)) dest.Top=src.Top;
+    if (IFrameSplitOperator.IsNumber(src.Right)) dest.Right=src.Right;
+    if (IFrameSplitOperator.IsNumber(src.Bottom)) dest.Bottom=src.Bottom;
+}
 
 var g_JSChartResource = new JSChartResource();
 

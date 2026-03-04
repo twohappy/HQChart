@@ -68,12 +68,18 @@ export default {
     //X轴滚动条
     JSScrollBarChart:JSScrollBarChart,
 
+    JSStockInfoChart:JSStockInfoChart,      //5档买卖
+    JSStatusBarChart:JSStatusBarChart,      //底部状态栏
+    JSScrollTextChart:JSScrollTextChart,    //跑马灯
+
     //图形基类导出
     IChartPainting:IChartPainting,              //图形
     IExtendChartPainting:IExtendChartPainting,  //扩展图形
     IChartTitlePainting:IChartTitlePainting,    //标题类
     IChartDrawPicture:IChartDrawPicture,        //画图工具
     DynamicTitleData:DynamicTitleData,          //指标标题数据
+
+    JSDivFrameToolbar:JSDivFrameToolbar,        //div指标工具条
 
     CONDITION_PERIOD:CONDITION_PERIOD,          //指标周期条件枚举
 
@@ -111,6 +117,8 @@ export default {
         JSCHART_WORKER_MESSAGE_ID:JSCHART_WORKER_MESSAGE_ID,
         JSCHART_MENU_ID:JSCHART_MENU_ID,
         JSCHART_TRADE_STATUS_ID:JSCHART_TRADE_STATUS_ID,        //交易状态
+        JSCHART_CORSSCURSOR_STATUS_ID:JSCHART_CORSSCURSOR_STATUS_ID,    //十字光标状态
+        CONDITION_PERIOD:CONDITION_PERIOD,          //指标周期条件枚举
     },
 
 

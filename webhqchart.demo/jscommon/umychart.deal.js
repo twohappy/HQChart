@@ -33,9 +33,18 @@ function JSDealChart(divElement)
     this.OnSize=function()
     {
         //画布大小通过div获取
-        var height=parseInt(this.DivElement.style.height.replace("px",""));
+        var height=this.DivElement.offsetHeight;
+        var width=this.DivElement.offsetWidth;
+        if (this.DivElement.style.height && this.DivElement.style.width)
+        {
+            if (this.DivElement.style.height.includes("px"))
+                height=parseInt(this.DivElement.style.height.replace("px",""));
+            if (this.DivElement.style.width.includes("px"))
+                width=parseInt(this.DivElement.style.width.replace("px",""));
+        }
+        
         this.CanvasElement.height=height;
-        this.CanvasElement.width=parseInt(this.DivElement.style.width.replace("px",""));
+        this.CanvasElement.width=width;
         this.CanvasElement.style.width=this.CanvasElement.width+'px';
         this.CanvasElement.style.height=this.CanvasElement.height+'px';
 
@@ -500,14 +509,17 @@ function JSDealChartContainer(uielement)
     this.ChangeSymbol=function(symbol, option)
     {
         this.Symbol=symbol;
-        this.Data=null;
-        this.SourceData=null;
+        this.Data={ DataOffset:0, Data:[] };                //分笔数据
+        this.SourceData={DataOffset:0, Data:[] };           //原始分笔数据
 
         var chart=this.ChartPaint[0];
         if (chart) chart.Data=null;
 
-        if (option && IFrameSplitOperator.IsNumber(option.TradeDate))
-            this.TradeDate=option.TradeDate;
+        if (option)
+        {
+            if (IFrameSplitOperator.IsNumber(option.TradeDate)) this.TradeDate=option.TradeDate;
+            if (IFrameSplitOperator.IsNonEmptyArray(option.Column)) this.SetColumn(option.Column);
+        } 
 
         if (!this.Symbol)
         {
@@ -615,6 +627,7 @@ function JSDealChartContainer(uielement)
         chart.Data=this.Data;
         chart.Symbol=this.Symbol;
         chart.YClose=data.yclose;
+        chart.YFClose=data.yfclose;
         chart.Open=data.open;
 
         if (this.IsShowLastPage) this.SetLastPageDataOffset();   //显示最后一屏
@@ -1148,17 +1161,23 @@ JSDealChartContainer.JsonDataToDealData=function(data)
 
         if (item[100]) dealItem.Guid=item[100];
 
-         //10个数值型 101-199
-         if (IFrameSplitOperator.IsNumber(item[101])) dealItem.ReserveNumber1=item[101];
-         if (IFrameSplitOperator.IsNumber(item[102])) dealItem.ReserveNumber2=item[102];
-         if (IFrameSplitOperator.IsNumber(item[103])) dealItem.ReserveNumber3=item[103];
-         if (IFrameSplitOperator.IsNumber(item[104])) dealItem.ReserveNumber4=item[104];
-         if (IFrameSplitOperator.IsNumber(item[105])) dealItem.ReserveNumber5=item[105];
-         if (IFrameSplitOperator.IsNumber(item[106])) dealItem.ReserveNumber6=item[106];
-         if (IFrameSplitOperator.IsNumber(item[107])) dealItem.ReserveNumber7=item[107];
-         if (IFrameSplitOperator.IsNumber(item[108])) dealItem.ReserveNumber8=item[108];
-         if (IFrameSplitOperator.IsNumber(item[109])) dealItem.ReserveNumber9=item[109];
-         if (IFrameSplitOperator.IsNumber(item[110])) dealItem.ReserveNumber10=item[110];
+        //柱子类型
+        if (item[50]) dealItem.MultiBar1=item[50];
+        if (item[51]) dealItem.MultiBar2=item[51];
+        if (item[52]) dealItem.MultiBar3=item[52];
+        if (item[53]) dealItem.MultiBar4=item[53];
+
+        //10个数值型 101-199
+        if (IFrameSplitOperator.IsNumber(item[101])) dealItem.ReserveNumber1=item[101];
+        if (IFrameSplitOperator.IsNumber(item[102])) dealItem.ReserveNumber2=item[102];
+        if (IFrameSplitOperator.IsNumber(item[103])) dealItem.ReserveNumber3=item[103];
+        if (IFrameSplitOperator.IsNumber(item[104])) dealItem.ReserveNumber4=item[104];
+        if (IFrameSplitOperator.IsNumber(item[105])) dealItem.ReserveNumber5=item[105];
+        if (IFrameSplitOperator.IsNumber(item[106])) dealItem.ReserveNumber6=item[106];
+        if (IFrameSplitOperator.IsNumber(item[107])) dealItem.ReserveNumber7=item[107];
+        if (IFrameSplitOperator.IsNumber(item[108])) dealItem.ReserveNumber8=item[108];
+        if (IFrameSplitOperator.IsNumber(item[109])) dealItem.ReserveNumber9=item[109];
+        if (IFrameSplitOperator.IsNumber(item[110])) dealItem.ReserveNumber10=item[110];
 
         //10个字符型 201-299
         if (IFrameSplitOperator.IsString(item[201]) || IFrameSplitOperator.IsObject(item[201])) dealItem.ReserveString1=item[201];
@@ -1269,13 +1288,12 @@ var DEAL_COLUMN_ID=
     UPDOWN_ID:5,        //涨跌
     STRING_TIME_ID:6,   //字符串时间
     INDEX_ID:7,         //序号 从1开始
-    MULTI_BAR_ID:8,     //多颜色柱子 
+    
     CENTER_BAR_ID:9,    //中心柱子
     CUSTOM_TEXT_ID:10,   //自定义文本
 
     SYMBOL_ID:11,       //股票代码
     NAME_ID:12,         //股票名称
-
 
     //预留数值类型 10个
     RESERVE_NUMBER1_ID:201,         //ReserveNumber1:
@@ -1300,6 +1318,11 @@ var DEAL_COLUMN_ID=
     RESERVE_STRING8_ID:308,
     RESERVE_STRING9_ID:309,
     RESERVE_STRING10_ID:310,
+
+    MULTI_BAR_ID:50,     //多颜色柱子 
+    MULTI_BAR2_ID:51,
+    MULTI_BAR3_ID:52,
+    MULTI_BAR4_ID:53
 }
 
 var MAP_DEAL_COLUMN_FIELD=new Map(
@@ -1307,6 +1330,11 @@ var MAP_DEAL_COLUMN_FIELD=new Map(
     [DEAL_COLUMN_ID.SYMBOL_ID, "Symbol"],
     [DEAL_COLUMN_ID.NAME_ID, "Name"],
     [DEAL_COLUMN_ID.PRICE_ID, "Price"],
+
+    [DEAL_COLUMN_ID.MULTI_BAR_ID, "MultiBar1"],
+    [DEAL_COLUMN_ID.MULTI_BAR2_ID, "MultiBar2"],
+    [DEAL_COLUMN_ID.MULTI_BAR3_ID, "MultiBar3"],
+    [DEAL_COLUMN_ID.MULTI_BAR4_ID, "MultiBar4"],
 
     [DEAL_COLUMN_ID.RESERVE_NUMBER1_ID,"ReserveNumber1"],
     [DEAL_COLUMN_ID.RESERVE_NUMBER2_ID,"ReserveNumber2"],
@@ -1344,6 +1372,7 @@ function ChartDealList()
     //this.Data={Offset:0, Data:[ {Time:925, Price:20.1, Vol:10000050, BS:1, Deal:45 }, {Time:925, Price:18.2, Vol:1150, BS:1, Deal:5 }] };
     this.Symbol;
     this.YClose;    //昨收
+    this.YFClose;   //昨结算
     this.Open;      //开盘价
     this.Decimal=2; //小数位数
     this.IsSingleTable=false;    //单表模式
@@ -1464,7 +1493,7 @@ function ChartDealList()
 
             if (item.ChartTooltip) colItem.ChartTooltip={ Enable:item.ChartTooltip.Enable, Type:item.ChartTooltip.Type };   //图形提示信息
 
-            if (item.Type==DEAL_COLUMN_ID.MULTI_BAR_ID || item.Type==DEAL_COLUMN_ID.CENTER_BAR_ID)
+            if (item.Type==DEAL_COLUMN_ID.CENTER_BAR_ID)
             {
                 if (!IFrameSplitOperator.IsNumber(item.DataIndex)) continue;
                 colItem.DataIndex=item.DataIndex;   //柱子数据所在原始数据索引列
@@ -1477,6 +1506,8 @@ function ChartDealList()
             {
                 if (item.Format) colItem.Format=item.Format;        //数据格式化设置{ Type:1=原始 2=千分位分割 3=万亿转换, ExFloatPrecision:万亿转换以后的小数位数 }
                 if (IFrameSplitOperator.IsNumber(item.ColorType))  colItem.ColorType=item.ColorType;        //0=默认 1=(>0, =0, <0) 2=(>=0, <0)
+                if (IFrameSplitOperator.IsNumber(item.FloatPrecision)) colItem.FloatPrecision=item.FloatPrecision;
+                if (item.StringFormat) colItem.StringFormat=item.StringFormat;      //"{0}%" 输出增加固定字符
             }
 
             this.Column.push(colItem);
@@ -1496,7 +1527,6 @@ function ChartDealList()
             { Type:DEAL_COLUMN_ID.STRING_TIME_ID, Title:"时间", TextAlign:"center", Width:null, TextColor:g_JSChartResource.DealList.FieldColor.Time, MaxText:"88:88:88" },
             { Type:DEAL_COLUMN_ID.INDEX_ID, Title:"序号", TextAlign:"center", Width:null, TextColor:g_JSChartResource.DealList.FieldColor.Index, MaxText:"88888" },
 
-            { Type:DEAL_COLUMN_ID.MULTI_BAR_ID, Title:"柱子", TextAlign:"center", Width:null, TextColor:g_JSChartResource.DealList.FieldColor.BarTitle, MaxText:"888888" },
             { Type:DEAL_COLUMN_ID.CENTER_BAR_ID, Title:"柱子2", TextAlign:"center", Width:null, TextColor:g_JSChartResource.DealList.FieldColor.BarTitle, MaxText:"888888" },
             { Type:DEAL_COLUMN_ID.CUSTOM_TEXT_ID, Title:"自定义", TextAlign:"center", Width:null, TextColor:g_JSChartResource.DealList.FieldColor.Text, MaxText:"擎擎擎擎擎" },
 
@@ -1524,6 +1554,11 @@ function ChartDealList()
             { Type:DEAL_COLUMN_ID.RESERVE_STRING8_ID, Title:"文字8", TextAlign:"right", TextColor:g_JSChartResource.Report.FieldColor.Text, MaxText:"擎擎擎擎擎擎" },
             { Type:DEAL_COLUMN_ID.RESERVE_STRING9_ID, Title:"文字9", TextAlign:"right", TextColor:g_JSChartResource.Report.FieldColor.Text, MaxText:"擎擎擎擎擎擎" },
             { Type:DEAL_COLUMN_ID.RESERVE_STRING10_ID, Title:"文字10", TextAlign:"right", TextColor:g_JSChartResource.Report.FieldColor.Text, MaxText:"擎擎擎擎擎擎" },
+
+            { Type:DEAL_COLUMN_ID.MULTI_BAR_ID, Title:"柱子", TextAlign:"center", Width:null, TextColor:g_JSChartResource.DealList.FieldColor.BarTitle, MaxText:"888888" },
+            { Type:DEAL_COLUMN_ID.MULTI_BAR2_ID, Title:"柱子2", TextAlign:"center", Width:null, TextColor:g_JSChartResource.DealList.FieldColor.BarTitle, MaxText:"888888" },
+            { Type:DEAL_COLUMN_ID.MULTI_BAR3_ID, Title:"柱子3", TextAlign:"center", Width:null, TextColor:g_JSChartResource.DealList.FieldColor.BarTitle, MaxText:"888888" },
+            { Type:DEAL_COLUMN_ID.MULTI_BAR4_ID, Title:"柱子4", TextAlign:"center", Width:null, TextColor:g_JSChartResource.DealList.FieldColor.BarTitle, MaxText:"888888" },
             
         ];
 
@@ -1820,10 +1855,7 @@ function ChartDealList()
             }
             else if (item.Type==DEAL_COLUMN_ID.PRICE_ID)
             {
-                if (data.Price>this.YClose) textColor=this.UpColor;
-                else if (data.Price<this.YClose) textColor=this.DownColor;
-                else textColor=this.UnchangeColor;
-
+                textColor=this.GetPriceColor(data.Price);
                 text=data.Price.toFixed(this.Decimal);
             }
             else if (item.Type==DEAL_COLUMN_ID.VOL_ID)
@@ -1864,7 +1896,7 @@ function ChartDealList()
             {
                 text=(dataIndex+1).toString();
             }
-            else if (item.Type==DEAL_COLUMN_ID.MULTI_BAR_ID)
+            else if (this.IsMulitBar(item.Type))
             {
                 var rtItem={Left:left, Top:top, Width:itemWidth, Height:this.RowHeight};
                 this.DrawMultiBar(item, data, rtItem);
@@ -1924,6 +1956,29 @@ function ChartDealList()
         }
     }
 
+    this.GetPriceColor=function(price)
+    {
+        var upperSymbol=null;
+        if (this.Symbol) upperSymbol=this.Symbol.toUpperCase();
+        if (MARKET_SUFFIX_NAME.IsChinaFutures(upperSymbol))
+        {
+            if (!IFrameSplitOperator.IsNumber(this.YFClose)) return  this.UnchangeColor;
+            return this.GetUpDownColor(price, this.YFClose);
+        }
+        else
+        {
+            if (!IFrameSplitOperator.IsNumber(this.YClose)) return this.UnchangeColor;
+            return this.GetUpDownColor(price, this.YClose);
+        }
+    }
+
+    this.GetUpDownColor=function(price, price2)
+    {
+        if (price>price2) return this.UpColor;
+        else if (price<price2) return this.DownColor;
+        else return this.UnchangeColor;
+    }
+
     this.FormatReserveNumber=function(column, data, drawInfo)
     {
         if (column.DefaultText) drawInfo.Text=column.DefaultText;
@@ -1964,6 +2019,11 @@ function ChartDealList()
                     text=IFrameSplitOperator.FormatValueStringV2(value, column.FloatPrecision,exfloatPrecision);
                     break;
             }
+        }
+
+        if (column.StringFormat && text)
+        {
+            text=column.StringFormat.replace("{0}", text);
         }
         
         drawInfo.Text=text;
@@ -2086,8 +2146,10 @@ function ChartDealList()
 
     this.DrawMultiBar=function(colunmInfo, data, rtItem)
     {
-        if (!data.Source || !IFrameSplitOperator.IsNonEmptyArray(data.Source)) return false;
-        var barData=data.Source[colunmInfo.DataIndex]; //{ Value:[0.4,0,2], Color:[0,1] };
+        var fieldName=MAP_DEAL_COLUMN_FIELD.get(colunmInfo.Type);
+        if (!data || !fieldName) return;
+
+        var barData=data[fieldName]; //{ Value:[0.4,0,2], Color:[0,1] };
         if (!barData) return false;
         if (!IFrameSplitOperator.IsNonEmptyArray(barData.Value)) return false;
 
@@ -2270,6 +2332,16 @@ function ChartDealList()
             DEAL_COLUMN_ID.RESERVE_STRING1_ID,DEAL_COLUMN_ID.RESERVE_STRING2_ID,DEAL_COLUMN_ID.RESERVE_STRING3_ID,DEAL_COLUMN_ID.RESERVE_STRING4_ID,
             DEAL_COLUMN_ID.RESERVE_STRING5_ID,DEAL_COLUMN_ID.RESERVE_STRING6_ID,DEAL_COLUMN_ID.RESERVE_STRING7_ID,DEAL_COLUMN_ID.RESERVE_STRING8_ID,
             DEAL_COLUMN_ID.RESERVE_STRING9_ID,DEAL_COLUMN_ID.RESERVE_STRING10_ID
+        ];
+
+        return ARARY_TYPE.includes(value);
+    }
+
+    this.IsMulitBar=function(value)
+    {
+        var ARARY_TYPE=
+        [
+            DEAL_COLUMN_ID.MULTI_BAR_ID,DEAL_COLUMN_ID.MULTI_BAR2_ID,DEAL_COLUMN_ID.MULTI_BAR3_ID,DEAL_COLUMN_ID.MULTI_BAR4_ID,
         ];
 
         return ARARY_TYPE.includes(value);

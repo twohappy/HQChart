@@ -274,6 +274,7 @@
                 SelectRectDialog:{ Enable:true },
                 KLineTooltip:{ Enable:true, EnableKeyDown:false },
                 FloatTooltip:{ Enable:true, },
+                SmallFloatTooltip:{ Enable:true },
                 SearchIndexDialog:{ Enable:true },
                 ModifyIndexParamDialog:{ Enable:true },
 
@@ -1071,6 +1072,8 @@
 
                     buttonColor[0]="rgb(156,156,156)";
                     buttonColor[1]="rgb(255,255,255)";
+
+                    JSChart.SetCSSStyle(STYLE_TYPE_ID.BLACK_ID);
                 }
                 else if (styleName=='white') 
                 {
@@ -1079,6 +1082,8 @@
 
                     buttonColor[0]="rgb(156,156,156)";
                     buttonColor[1]="rgb(105,105,105)";
+
+                    JSChart.SetCSSStyle(STYLE_TYPE_ID.WHITE_ID);
                 }
                 else 
                 {
@@ -1606,6 +1611,7 @@
             resource.DOTLINE.LineDash=[10,10];
             //resource.IndexTitle.ArrowType=1;
             resource.IndexTitle.EnableIndexArrow=false;
+            JSChart.SetCSSStyle(STYLE_TYPE_ID.BLACK_ID);
         }
 
         function DeleteLocalIndex(e, name)
@@ -1670,7 +1676,7 @@
             SelectLocalIndex=(e, name)=> { klineControl.SelectLocalIndex(e, name); }
 
             //自定义函数和变量
-            JSComplier.AddFunction({ Name:'FUNC_DEMO',   Description:'自定义函数1', IsDownload:false } );
+            JSComplier.AddFunction({ Name:'FUNC_ALPHA', Description:'自定义Alpha函数', IsDownload:true, Invoke:(obj)=>{ return HQData.FUNC_ALPHA(obj); } } );
             JSComplier.AddVariant({ Name:'VAR_DEMO',   Description:'自定义变量1' } );
 
             
